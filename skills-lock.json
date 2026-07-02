@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "israeli-flight-finder": {
+      "source": "skills-il/localization",
+      "sourceType": "github",
+      "computedHash": "afb15f1e026ba7040691597c1e7aa1ee6d15d01e975511bf1ec71589f943e414"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+name: vacations_app
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: vacations_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-vacations_db}
+      MYSQL_USER: ${DB_USER:-vacations_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-vacations_pass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./dataBase/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${DB_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: vacations_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+# - Server: db (auto-filled via PMA_HOST)
+# - Username: vacations_user / Password: vacations_pass
+# - Or root: Username: root / Password: rootpassword

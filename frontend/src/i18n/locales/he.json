@@ -1,0 +1,151 @@
+{
+  "nav": {
+    "home": "בית",
+    "login": "כניסה",
+    "register": "הרשמה",
+    "vacations": "חופשות",
+    "myBookings": "ההזמנות שלי",
+    "aiPlanner": "מתכנן AI",
+    "smartSearch": "חיפוש חכם",
+    "adminVacations": "חופשות",
+    "adminBookings": "הזמנות",
+    "analytics": "ניתוח נתונים",
+    "logout": "יציאה",
+    "toggleDark": "החלף מצב כהה",
+    "openMenu": "פתח תפריט"
+  },
+  "hero": {
+    "title": "חופשות",
+    "subtitle": "גלה, אהב והזמן את ההרפתקה הבאה שלך — עם תכנון טיול מבוסס AI וביקורות אמיתיות מהקהילה.",
+    "getStarted": "התחל עכשיו",
+    "signIn": "כניסה",
+    "browseVacations": "עיין בחופשות"
+  },
+  "features": {
+    "browse": { "title": "עיון ואהבה", "desc": "גלה יעדים מאורגנים ושמור את המועדפים שלך בלחיצה אחת." },
+    "ai": { "title": "מתכנן טיול AI", "desc": "קבל מסלול יום-יום מותאם אישית לכל יעד, מופעל על ידי AI." },
+    "book": { "title": "הזמנה קלה", "desc": "הזמן תוך שניות עם תהליך תשלום מהיר. פשוט, בטוח ומיידי." },
+    "community": { "title": "ביקורות קהילה", "desc": "קרא דירוגי כוכבים והערות כנות מנוסעים אחרים." }
+  },
+  "vacations": {
+    "title": "חופשות",
+    "noResults": "לא נמצאו חופשות. נסה לנקות את הסינון.",
+    "filters": {
+      "all": "הכל",
+      "active": "פעיל כעת",
+      "upcoming": "קרוב",
+      "past": "עבר"
+    },
+    "status": {
+      "active": "פעיל כעת",
+      "future": "קרוב",
+      "past": "עבר"
+    },
+    "viewDetails": "פרטים נוספים",
+    "aiTip": "✨ טיפ",
+    "aiTipTitle": "טיפ מהיר מ-AI",
+    "aiTipLoading": "שואל AI…",
+    "closeTip": "סגור טיפ",
+    "like": "אהבתי",
+    "unlike": "הסר אהבתי"
+  },
+  "auth": {
+    "loginTitle": "ברוך השב",
+    "loginSubtitle": "התחבר לחשבון שלך",
+    "registerTitle": "צור חשבון",
+    "registerSubtitle": "הצטרף לאלפי נוסעים",
+    "email": "כתובת אימייל",
+    "password": "סיסמה",
+    "firstName": "שם פרטי",
+    "lastName": "שם משפחה",
+    "signIn": "כניסה",
+    "createAccount": "צור חשבון",
+    "noAccount": "אין לך חשבון?",
+    "hasAccount": "כבר יש לך חשבון?",
+    "register": "הרשמה",
+    "login": "כניסה"
+  },
+  "booking": {
+    "title": "הזמן חופשה זו",
+    "travelers": "מספר נוסעים",
+    "totalPrice": "מחיר סה\"כ",
+    "confirm": "אשר הזמנה",
+    "cancel": "ביטול",
+    "success": "ההזמנה אושרה!",
+    "reference": "מספר הזמנה"
+  },
+  "myBookings": {
+    "title": "ההזמנות שלי",
+    "noBookings": "אין עדיין הזמנות.",
+    "browseLink": "עיין בחופשות →",
+    "reference": "מספר",
+    "travelers": "נוסעים",
+    "status": "סטטוס",
+    "confirmed": "מאושר",
+    "cancelled": "מבוטל",
+    "cancelBtn": "בטל הזמנה"
+  },
+  "tripPlanner": {
+    "title": "מתכנן טיול AI",
+    "subtitle": "הקלד כל יעד ו-AI יבנה לך מסלול יום-יום מותאם אישית.",
+    "placeholder": "לדוגמה: טוקיו, יפן  או  חוף אמלפי, איטליה",
+    "whereGoing": "לאן אתה רוצה ללכת?",
+    "tripLength": "אורך הטיול",
+    "generate": "✨ צור מסלול",
+    "days": "יום {{count}}",
+    "days_other": "{{count}} ימים",
+    "day": "יום",
+    "activities": "פעילויות",
+    "restaurant": "המלצת מסעדה",
+    "dayLabel": "יום {{day}} — {{theme}}",
+    "disclaimer": "המסלול נוצר על ידי AI · אמת שעות פתיחה וזמינות מקומית",
+    "retry": "נסה שוב",
+    "browseVacations": "עיין בחופשות →"
+  },
+  "search": {
+    "title": "חיפוש חכם",
+    "subtitle": "תאר את הטיול האידיאלי שלך בשפה פשוטה — AI ימצא את ההתאמות הטובות ביותר.",
+    "placeholder": "לדוגמה: \"חופשת חוף זולה מתחת ל-$1,500\" או \"הרפתקה ידידותית למשפחות באירופה\"",
+    "searchBtn": "חפש",
+    "clearBtn": "נקה חיפוש",
+    "matchLabel": "תוצאות AI עבור",
+    "noResults": "לא נמצאו חופשות מתאימות. נסה מילות מפתח שונות.",
+    "suggestions": {
+      "beach": "חופשת חוף במחיר זול",
+      "europe": "טיול רומנטי באירופה",
+      "family": "הרפתקה ידידותית למשפחות",
+      "luxury": "בריחה טרופית יוקרתית"
+    }
+  },
+  "chat": {
+    "title": "עוזר חופשות",
+    "placeholder": "שאל על חופשות, מחירים, זמינות…",
+    "send": "שלח",
+    "clear": "נקה שיחה",
+    "typing": "AI חושב…",
+    "confirmBooking": "המשך להזמנה →",
+    "cancelBooking": "ביטול",
+    "bookingProposal": "הצעת הזמנה"
+  },
+  "admin": {
+    "vacationsTitle": "ניהול חופשות",
+    "bookingsTitle": "ניהול הזמנות",
+    "analyticsTitle": "לוח מחוונים",
+    "addVacation": "הוסף חופשה",
+    "edit": "עריכה",
+    "delete": "מחיקה",
+    "confirm": "האם אתה בטוח?",
+    "exportCsv": "ייצוא CSV",
+    "exportPdf": "ייצוא PDF"
+  },
+  "common": {
+    "loading": "טוען…",
+    "error": "משהו השתבש.",
+    "price": "מ-${{price}}",
+    "perPerson": "/ לאדם",
+    "dates": "{{start}} – {{end}}",
+    "reviews": "ביקורת {{count}}",
+    "reviews_other": "{{count}} ביקורות",
+    "back": "חזרה"
+  }
+}

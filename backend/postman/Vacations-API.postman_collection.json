@@ -1,0 +1,407 @@
+{
+  "info": {
+    "name": "Vacations API",
+    "_postman_id": "b6f2a3e0-1a2b-4c3d-9e8f-vacations0001",
+    "description": "Full Stack Vacations project — REST API collection covering auth, vacations, likes, reviews, bookings, AI features, MCP, and admin analytics. Import this file directly into Postman, then set the `baseUrl` and `token` collection variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" },
+    { "key": "vacationId", "value": "1", "type": "string" },
+    { "key": "reviewId", "value": "1", "type": "string" },
+    { "key": "bookingId", "value": "1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Dana\",\n  \"lastName\": \"Levi\",\n  \"email\": \"dana.levi@example.com\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] },
+            "description": "Registers a new user with role 'user'. Email must be unique and valid; password min 4 chars."
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dana.levi@example.com\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "description": "Returns a JWT. Copy the token into the {{token}} collection variable (or {{adminToken}} if logging in as an admin seed user)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vacations",
+      "item": [
+        {
+          "name": "Get Vacations (paginated + filters)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/vacations?page=1&likedOnly=false&activeOnly=false&notStartedOnly=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacations"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "likedOnly", "value": "false" },
+                { "key": "activeOnly", "value": "false" },
+                { "key": "notStartedOnly", "value": "false" }
+              ]
+            },
+            "description": "9 per page, sorted by startDate ascending. Toggle the filter query params as needed (only one filter should be true at a time per the spec)."
+          }
+        },
+        {
+          "name": "Get Vacation Detail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/vacations/{{vacationId}}", "host": ["{{baseUrl}}"], "path": ["vacations", "{{vacationId}}"] }
+          }
+        },
+        {
+          "name": "Add Vacation (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "destination", "value": "Santorini, Greece", "type": "text" },
+                { "key": "description", "value": "Whitewashed cliffside villages and sunset views over the caldera.", "type": "text" },
+                { "key": "startDate", "value": "2026-09-10", "type": "text" },
+                { "key": "endDate", "value": "2026-09-17", "type": "text" },
+                { "key": "price", "value": "1450", "type": "text" },
+                { "key": "image", "type": "file", "src": [] }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/vacations", "host": ["{{baseUrl}}"], "path": ["vacations"] },
+            "description": "multipart/form-data. price must be 0 < price <= 10000. endDate >= startDate. startDate cannot be in the past."
+          }
+        },
+        {
+          "name": "Update Vacation (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "destination", "value": "Santorini, Greece", "type": "text" },
+                { "key": "description", "value": "Updated description text.", "type": "text" },
+                { "key": "startDate", "value": "2026-09-10", "type": "text" },
+                { "key": "endDate", "value": "2026-09-17", "type": "text" },
+                { "key": "price", "value": "1550", "type": "text" },
+                { "key": "image", "type": "file", "src": [] }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/vacations/{{vacationId}}", "host": ["{{baseUrl}}"], "path": ["vacations", "{{vacationId}}"] },
+            "description": "Image is optional on edit (omit the 'image' part to keep the existing one). Past startDate is allowed here."
+          }
+        },
+        {
+          "name": "Delete Vacation (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/vacations/{{vacationId}}", "host": ["{{baseUrl}}"], "path": ["vacations", "{{vacationId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Likes",
+      "item": [
+        {
+          "name": "Like Vacation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/vacations/{{vacationId}}/like", "host": ["{{baseUrl}}"], "path": ["vacations", "{{vacationId}}", "like"] }
+          }
+        },
+        {
+          "name": "Unlike Vacation",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/vacations/{{vacationId}}/like", "host": ["{{baseUrl}}"], "path": ["vacations", "{{vacationId}}", "like"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Get Reviews for Vacation",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/vacations/{{vacationId}}/reviews", "host": ["{{baseUrl}}"], "path": ["vacations", "{{vacationId}}", "reviews"] }
+          }
+        },
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Absolutely stunning views, would book again!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/vacations/{{vacationId}}/reviews", "host": ["{{baseUrl}}"], "path": ["vacations", "{{vacationId}}", "reviews"] },
+            "description": "rating 1-5 required, comment optional. Returns 409 if the user already reviewed this vacation."
+          }
+        },
+        {
+          "name": "Update Own Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Updated: still great, slightly noisy at night.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/reviews/{{reviewId}}", "host": ["{{baseUrl}}"], "path": ["reviews", "{{reviewId}}"] }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/reviews/{{reviewId}}", "host": ["{{baseUrl}}"], "path": ["reviews", "{{reviewId}}"] },
+            "description": "Users can delete their own review; admins can delete any review (use {{adminToken}} for moderation)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking (mock payment)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numTravelers\": 2,\n  \"payment\": {\n    \"cardNumber\": \"4242424242424242\",\n    \"expiry\": \"12/29\",\n    \"cvv\": \"123\",\n    \"cardholderName\": \"Dana Levi\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/vacations/{{vacationId}}/book", "host": ["{{baseUrl}}"], "path": ["vacations", "{{vacationId}}", "book"] },
+            "description": "Demo card 4242 4242 4242 4242 passes the Luhn check. Payment fields are validated for format only and are never persisted or logged."
+          }
+        },
+        {
+          "name": "Get My Bookings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/bookings/me", "host": ["{{baseUrl}}"], "path": ["bookings", "me"] }
+          }
+        },
+        {
+          "name": "Cancel My Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/bookings/{{bookingId}}", "host": ["{{baseUrl}}"], "path": ["bookings", "{{bookingId}}"] },
+            "description": "Sets status = cancelled (soft delete). Disallowed once the vacation has already started."
+          }
+        },
+        {
+          "name": "Get All Bookings (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/admin/bookings?status=confirmed",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "bookings"],
+              "query": [{ "key": "status", "value": "confirmed" }]
+            }
+          }
+        },
+        {
+          "name": "Update Booking Status (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"cancelled\"\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/bookings/{{bookingId}}", "host": ["{{baseUrl}}"], "path": ["admin", "bookings", "{{bookingId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Features",
+      "item": [
+        {
+          "name": "Quick Tip (AI Recommendation)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"destination\": \"Lisbon\"\n}" },
+            "url": { "raw": "{{baseUrl}}/ai/recommend", "host": ["{{baseUrl}}"], "path": ["ai", "recommend"] },
+            "description": "Lightweight single-tip endpoint, used by the card-level popover. No DB linkage."
+          }
+        },
+        {
+          "name": "AI Trip Planner",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"vacationId\": {{vacationId}}\n}" },
+            "url": { "raw": "{{baseUrl}}/ai/trip-plan", "host": ["{{baseUrl}}"], "path": ["ai", "trip-plan"] },
+            "description": "Returns a structured day-by-day JSON itinerary based on the vacation's real startDate/endDate from the DB. Centerpiece feature."
+          }
+        },
+        {
+          "name": "Semantic Search",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"query\": \"romantic and cheap vacation in Europe\"\n}" },
+            "url": { "raw": "{{baseUrl}}/ai/semantic-search", "host": ["{{baseUrl}}"], "path": ["ai", "semantic-search"] },
+            "description": "Claude translates free text into a structured filter object; backend applies it to a normal SQL query and returns matching vacations."
+          }
+        }
+      ]
+    },
+    {
+      "name": "MCP Chat",
+      "item": [
+        {
+          "name": "Ask MCP Assistant",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"question\": \"How many active vacations are there right now?\"\n}" },
+            "url": { "raw": "{{baseUrl}}/mcp/ask", "host": ["{{baseUrl}}"], "path": ["mcp", "ask"] },
+            "description": "General Q&A over the vacations DB. Try also: 'What is the average vacation price?', 'What future vacations exist for European countries?', 'What are the top rated vacations?'"
+          }
+        },
+        {
+          "name": "Ask MCP Assistant - Booking Intent (step 1, proposes)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"question\": \"Book Rome for 2 people\"\n}" },
+            "url": { "raw": "{{baseUrl}}/mcp/ask", "host": ["{{baseUrl}}"], "path": ["mcp", "ask"] },
+            "description": "Expect a response with requiresConfirmation: true and a proposed booking summary — no DB write yet."
+          }
+        },
+        {
+          "name": "Ask MCP Assistant - Confirm Booking (step 2 — deep-link pattern)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"question\": \"Yes, book it\",\n  \"history\": [\n    { \"role\": \"user\", \"content\": \"Book Rome for 2 people\" },\n    { \"role\": \"assistant\", \"content\": \"I found Rome, Italy...\" }\n  ]\n}" },
+            "url": { "raw": "{{baseUrl}}/mcp/ask", "host": ["{{baseUrl}}"], "path": ["mcp", "ask"] },
+            "description": "IMPLEMENTATION NOTE: This project uses the deep-link confirmation pattern. Step 1 returns requiresConfirmation:true + pendingBooking with a deepLink URL (e.g. /vacations/3?travelers=2). The frontend shows Confirm/Cancel buttons; on Confirm, it navigates to the deepLink where the user completes the real checkout with mock payment. No booking is created without going through the payment form. Pass history[] to maintain conversation context."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Analytics & Reports",
+      "item": [
+        {
+          "name": "Analytics Overview",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/analytics/overview", "host": ["{{baseUrl}}"], "path": ["admin", "analytics", "overview"] }
+          }
+        },
+        {
+          "name": "Revenue By Month",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/analytics/revenue-by-month", "host": ["{{baseUrl}}"], "path": ["admin", "analytics", "revenue-by-month"] }
+          }
+        },
+        {
+          "name": "Popular Vacations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/analytics/popular-vacations", "host": ["{{baseUrl}}"], "path": ["admin", "analytics", "popular-vacations"] }
+          }
+        },
+        {
+          "name": "Likes Report (JSON)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/reports/likes", "host": ["{{baseUrl}}"], "path": ["reports", "likes"] }
+          }
+        },
+        {
+          "name": "Likes Report (CSV download)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/reports/likes/csv", "host": ["{{baseUrl}}"], "path": ["reports", "likes", "csv"] }
+          }
+        },
+        {
+          "name": "Export PDF Report",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/reports/export/pdf", "host": ["{{baseUrl}}"], "path": ["reports", "export", "pdf"] }
+          }
+        }
+      ]
+    }
+  ]
+}
