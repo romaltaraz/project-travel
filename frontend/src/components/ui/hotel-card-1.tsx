@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { Star, MapPin, Wifi, Waves, Coffee, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, MapPin, Wifi, Waves, Coffee, Check, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export interface HotelCardProps {
@@ -13,6 +13,8 @@ export interface HotelCardProps {
   pricePerNight: number;
   freeCancellation: boolean;
   amenities: string[];
+  liked?: boolean;
+  onToggleLike?: () => void;
   className?: string;
 }
 
@@ -24,10 +26,18 @@ const AMENITY_ICONS: Record<string, React.ComponentType<{ className?: string }>>
 
 const SWIPE_THRESHOLD = 60;
 
-const PhotoGallery: React.FC<{ images: string[]; name: string; freeCancellation: boolean }> = ({
+const PhotoGallery: React.FC<{
+  images: string[];
+  name: string;
+  freeCancellation: boolean;
+  liked?: boolean;
+  onToggleLike?: () => void;
+}> = ({
   images,
   name,
   freeCancellation,
+  liked,
+  onToggleLike,
 }) => {
   const [index, setIndex] = React.useState(0);
   const [direction, setDirection] = React.useState(0);
@@ -66,6 +76,21 @@ const PhotoGallery: React.FC<{ images: string[]; name: string; freeCancellation:
         <span className="absolute top-3 left-3 z-10 text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary-600 text-white shadow">
           Free cancellation
         </span>
+      )}
+
+      {onToggleLike && (
+        <button
+          type="button"
+          onClick={e => { e.stopPropagation(); onToggleLike(); }}
+          aria-label={liked ? `Unlike ${name}` : `Like ${name}`}
+          aria-pressed={liked}
+          className={cn(
+            'absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full border backdrop-blur-md shadow transition-all cursor-pointer',
+            liked ? 'bg-red-500/90 border-red-400/50 text-white' : 'bg-white/20 border-white/30 text-white hover:bg-white/35'
+          )}
+        >
+          <Heart className="h-4 w-4" fill={liked ? 'currentColor' : 'none'} />
+        </button>
       )}
 
       {images.length > 1 && (
@@ -116,6 +141,8 @@ export const HotelCard = React.forwardRef<HTMLDivElement, HotelCardProps>(
       pricePerNight,
       freeCancellation,
       amenities,
+      liked,
+      onToggleLike,
       className,
     },
     ref
@@ -152,7 +179,13 @@ export const HotelCard = React.forwardRef<HTMLDivElement, HotelCardProps>(
         animate="visible"
         whileHover={{ scale: 1.03, transition: { duration: 0.3 } }}
       >
-        <PhotoGallery images={images} name={name} freeCancellation={freeCancellation} />
+        <PhotoGallery
+          images={images}
+          name={name}
+          freeCancellation={freeCancellation}
+          liked={liked}
+          onToggleLike={onToggleLike}
+        />
 
         <div className="p-6 pt-4">
           {/* Name + Location */}

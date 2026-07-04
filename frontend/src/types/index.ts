@@ -62,6 +62,21 @@ export interface VacationFilters {
   notStartedOnly: boolean;
 }
 
+export interface Hotel {
+  id: number;
+  name: string;
+  city: string;
+  starRating: number;
+  guestScore: number;
+  reviewsCount: number;
+  pricePerNight: number;
+  freeCancellation: boolean;
+  amenities: string[];
+  images: string[];
+  likesCount: number;
+  likedByMe: boolean;
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;

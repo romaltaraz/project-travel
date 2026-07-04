@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Lock, CreditCard } from 'lucide-react';
 import { PaymentDetails } from '../../types';
 
 // Client-side Luhn check (mirrors the backend validation)
@@ -75,9 +76,12 @@ const MockPaymentForm: React.FC<Props> = ({ onSubmit, loading }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Demo notice */}
-      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg px-4 py-3 text-sm text-amber-800 dark:text-amber-300">
-        🔒 <strong>Demo mode</strong> — no real payment is processed.<br/>
-        Try card: <code className="font-mono font-bold">4242 4242 4242 4242</code>
+      <div className="flex items-start gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg px-4 py-3 text-sm text-amber-800 dark:text-amber-300">
+        <Lock className="w-4 h-4 mt-0.5 flex-shrink-0" />
+        <span>
+          <strong>Demo mode</strong> — no real payment is processed.<br/>
+          Try card: <code className="font-mono font-bold">4242 4242 4242 4242</code>
+        </span>
       </div>
 
       <div>
@@ -147,9 +151,9 @@ const MockPaymentForm: React.FC<Props> = ({ onSubmit, loading }) => {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3 bg-accent-500 text-white font-bold rounded-xl hover:bg-accent-600 disabled:opacity-60 transition-colors text-base"
+        className="w-full py-3 bg-accent-500 text-white font-bold rounded-xl hover:bg-accent-600 disabled:opacity-60 transition-colors text-base inline-flex items-center justify-center gap-2"
       >
-        {loading ? 'Processing…' : '💳 Pay & Confirm Booking'}
+        {loading ? 'Processing…' : <><CreditCard className="w-4 h-4" /> Pay & Confirm Booking</>}
       </button>
     </form>
   );

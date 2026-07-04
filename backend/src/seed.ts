@@ -153,6 +153,146 @@ const vacations = [
   },
 ];
 
+// Real photos of each named hotel: Wikimedia Commons (freely licensed) where available,
+// otherwise the hotel's own official site (their copyrighted marketing photos — fine for
+// this demo, not for commercial reuse without permission).
+const WC = (file: string) => `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}`;
+
+const hotels = [
+  { name: 'Hotel Artemide', city: 'Rome, Italy', starRating: 4, guestScore: 8.6, reviewsCount: 4210, pricePerNight: 180, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
+    images: [
+      'https://www.hotelartemide.it/static/ee6ae7db978739bb0f8f969d03796604/ff2b2/8dfdb95c-05ea-4fbc-92cd-c22fb3a54562.jpg',
+      'https://www.hotelartemide.it/static/bfefbb4c07326bb12cc39d40a6e526f4/ba0b2/9a0380ff-f194-4314-b5df-2adb5d847d74.jpg',
+      'https://www.hotelartemide.it/static/c8ec2ae85589b1ef995317a5cb6b0496/ff2b2/c8a9414b-7760-4bcd-9076-7b8019cf245c.jpg',
+    ] },
+  { name: 'Hôtel Le Six', city: 'Paris, France', starRating: 4, guestScore: 8.9, reviewsCount: 3120, pricePerNight: 220, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
+    images: [
+      'https://www.hotel-le-six.com/cache/img/home-67813-1620-720-auto.jpeg',
+      'https://www.hotel-le-six.com/cache/img/le-six-hotel-lounge-67964-800-950-auto.jpg',
+      'https://www.hotel-le-six.com/cache/img/le-six-hotel-breakfast-67958-540-360-crop.jpg',
+    ] },
+  { name: 'Shinjuku Granbell Hotel', city: 'Tokyo, Japan', starRating: 4, guestScore: 8.7, reviewsCount: 5860, pricePerNight: 150, freeCancellation: true, amenities: ['Free WiFi'],
+    images: [
+      WC('Shinjuku Granbell Hotel, Tokyo, 2019 - 225.jpg'),
+      WC('Bathroom in the Shinjuku Granbell Hotel in Tokyo, 2019 - 001.jpg'),
+    ] },
+  { name: 'The Kayon Resort', city: 'Bali, Indonesia', starRating: 5, guestScore: 9.1, reviewsCount: 2740, pricePerNight: 120, freeCancellation: true, amenities: ['Pool', 'Free WiFi', 'Breakfast included'],
+    images: [
+      'https://thekayonresort.com/wp-content/uploads/2025/01/header-kayon-royal-retreat.jpg',
+      'https://thekayonresort.com/wp-content/uploads/2024/10/river-edge-pool-villa.jpg',
+      'https://thekayonresort.com/wp-content/uploads/2024/10/kayon-river-suite.jpg',
+    ] },
+  { name: 'Canaves Oia Suites', city: 'Santorini, Greece', starRating: 5, guestScore: 9.4, reviewsCount: 1980, pricePerNight: 340, freeCancellation: false, amenities: ['Pool', 'Free WiFi', 'Breakfast included'],
+    images: [
+      'https://canaves.com/wp-content/uploads/2024/12/5_luxury_star_hotel_santorini_oia_canaves-_suites_gallery-2-600x389.jpg',
+      'https://canaves.com/wp-content/uploads/2024/12/5_luxury_star_hotel_santorini_oia_canaves-_suites_gallery-4-600x439.jpg',
+      'https://canaves.com/wp-content/uploads/2024/12/5_luxury_star_hotel_santorini_oia_canaves-_suites_gallery-7-600x1062.jpg',
+    ] },
+  { name: 'Hotel Casa Bonay', city: 'Barcelona, Spain', starRating: 4, guestScore: 8.8, reviewsCount: 3340, pricePerNight: 190, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
+    images: [
+      'https://cdn-hhbfohb.nitrocdn.com/MWVuFFQrOubRCgucqTrIdzQgXRECTcge/assets/images/optimized/rev-54fad52/casabonay.com/wp-content/uploads/2021/08/ATP2775@antp-scaled-e1628597088539-659x879.jpg',
+      'https://cdn-hhbfohb.nitrocdn.com/MWVuFFQrOubRCgucqTrIdzQgXRECTcge/assets/images/optimized/rev-54fad52/casabonay.com/wp-content/uploads/2016/05/CASA_BONAY_SAILING-CLUB-999x660.jpg',
+      'https://cdn-hhbfohb.nitrocdn.com/MWVuFFQrOubRCgucqTrIdzQgXRECTcge/assets/images/optimized/rev-54fad52/casabonay.com/wp-content/uploads/2018/02/DSC0429-999x660.jpg',
+    ] },
+  { name: 'The Pod Times Square', city: 'New York, USA', starRating: 3, guestScore: 8.2, reviewsCount: 9120, pricePerNight: 210, freeCancellation: true, amenities: ['Free WiFi'],
+    images: [
+      'https://assets.milestoneinternet.com/cdn-cgi/image/width=1800,height=1200,f=auto/pod-hotels/the-pod-hotels/siteimages/pod-rooms-pod-times-square-brooklyn-newyork.jpg',
+      'https://assets.milestoneinternet.com/cdn-cgi/image/f=auto/pod-hotels/the-pod-hotels/siteimages/pod-tsq-queen-pod.jpg',
+      'https://assets.milestoneinternet.com/cdn-cgi/image/f=auto/pod-hotels/the-pod-hotels/siteimages/pod-tsq-bunk-pod.jpg',
+    ] },
+  { name: 'Sun Siyam Iru Fushi', city: 'Maldives', starRating: 5, guestScore: 9.5, reviewsCount: 1420, pricePerNight: 480, freeCancellation: false, amenities: ['Pool', 'Beach access', 'Breakfast included'],
+    images: [
+      'https://www.sunsiyam.com/media/pxjjnfgw/dji_0180-1.jpg',
+      'https://www.sunsiyam.com/media/aeejkefc/irufushi_hidden_retreat_0129.jpg',
+      'https://www.sunsiyam.com/media/3kelpb2j/6g5a0110-avec-accentuation-nr-1.jpg',
+    ] },
+  { name: 'Ovolo Woolloomooloo', city: 'Sydney, Australia', starRating: 4, guestScore: 8.7, reviewsCount: 2650, pricePerNight: 200, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
+    images: [
+      WC('Blue Hotel Woolloomooloo, Sydney - panoramio.jpg'),
+      WC('Blue Hotel Interior I - panoramio.jpg'),
+      WC('(1)Finger Wharf-1.jpg'),
+    ] },
+  { name: 'The Silo Hotel', city: 'Cape Town, South Africa', starRating: 5, guestScore: 9.3, reviewsCount: 980, pricePerNight: 310, freeCancellation: true, amenities: ['Pool', 'Free WiFi', 'Spa'],
+    images: [
+      'https://wp.theroyalportfolio.com/app/uploads/2022/06/Silo-Hotel-2228-scaled.jpg',
+      'https://wp.theroyalportfolio.com/app/uploads/2022/06/DSC_2635_-scaled.jpg',
+    ] },
+  { name: 'Sumaq Machu Picchu Hotel', city: 'Machu Picchu, Peru', starRating: 5, guestScore: 9.2, reviewsCount: 760, pricePerNight: 260, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
+    images: [
+      'https://image-tc.galaxy.tf/wijpeg-9b8zh7l2e0tmfj13y1mmc5zcv/dsf3392_standard.jpg',
+      'https://image-tc.galaxy.tf/wijpeg-eqyh2gi0vya6yynvvmk7siwx6/room-sumaq-deluxe-garden-view_standard.jpg',
+      'https://image-tc.galaxy.tf/wijpeg-11eswlfjazo2rv69buoe72qke/fg8a3181-copia-copia_standard.jpg',
+    ] },
+  { name: 'Jumeirah Beach Hotel', city: 'Dubai, UAE', starRating: 5, guestScore: 9.0, reviewsCount: 6210, pricePerNight: 290, freeCancellation: true, amenities: ['Pool', 'Beach access', 'Free WiFi'],
+    images: [WC('MTM A8 in Dubai.jpg')] },
+  { name: 'Hotel V Nesplein', city: 'Amsterdam, Netherlands', starRating: 4, guestScore: 8.7, reviewsCount: 2890, pricePerNight: 175, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
+    images: [
+      'https://admin.hotelv.com/wp-content/uploads/2025/05/Gallery-slide-1-scaled.jpg',
+      'https://admin.hotelv.com/wp-content/uploads/2025/05/Gallery-slide-4.jpg',
+      'https://admin.hotelv.com/wp-content/uploads/2025/05/Gallery-slide-6-scaled.jpg',
+    ] },
+  { name: 'Reykjavik Konsulat Hotel', city: 'Reykjavik, Iceland', starRating: 4, guestScore: 8.9, reviewsCount: 1340, pricePerNight: 260, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
+    images: [
+      'https://www.reykjavikkonsulathotel.is/static/strevda/1522159717-_z9a3136-2.jpg',
+      'https://www.reykjavikkonsulathotel.is/static/strevda/1522141265-_z9a2890.jpg',
+      'https://www.reykjavikkonsulathotel.is/static/extras/images/.of/REKCUQQ-Lobby-Bar-Lounge%20(2)120.jpg',
+    ] },
+  { name: 'The Ritz-Carlton Kyoto', city: 'Kyoto, Japan', starRating: 5, guestScore: 9.4, reviewsCount: 1150, pricePerNight: 420, freeCancellation: true, amenities: ['Free WiFi', 'Spa', 'Breakfast included'],
+    images: [WC('The Ritz-Carton Kyoto 2.jpg'), WC('The Ritz-Carton Kyoto.jpg')] },
+  { name: 'Trisara Phuket', city: 'Phuket, Thailand', starRating: 5, guestScore: 9.3, reviewsCount: 890, pricePerNight: 340, freeCancellation: false, amenities: ['Pool', 'Beach access', 'Spa'],
+    images: [WC('Thumb_Thailand_Phuket_NaithornBeach_TRISARA_Ocean_Front_Pool_Villa_View.jpg')] },
+  { name: 'Le Sirenuse', city: 'Amalfi Coast, Italy', starRating: 5, guestScore: 9.5, reviewsCount: 1020, pricePerNight: 550, freeCancellation: false, amenities: ['Pool', 'Free WiFi', 'Breakfast included'],
+    images: [
+      'https://sirenuse.it/media/qxdob5yf/le-sirenuse-hotel-positano_views_9997.jpg',
+      'https://sirenuse.it/media/0s5ep1xf/le_sirenuse_pool-1042-1.jpg',
+      'https://sirenuse.it/media/qguhthws/le-sirenuse_room_junior-suite-superior-b1j_9627.jpg',
+    ] },
+  { name: 'Hotel Nacional de Cuba', city: 'Havana, Cuba', starRating: 4, guestScore: 8.3, reviewsCount: 3560, pricePerNight: 140, freeCancellation: true, amenities: ['Pool', 'Free WiFi'],
+    images: [WC('Entrance to Hotel Nacional de Cuba in Old Havana.JPG'), WC('Cuba, Havana, Sunset over Hotel Nacional.jpg')] },
+  { name: 'La Mamounia', city: 'Marrakech, Morocco', starRating: 5, guestScore: 9.2, reviewsCount: 2140, pricePerNight: 310, freeCancellation: true, amenities: ['Pool', 'Spa', 'Breakfast included'],
+    images: [WC('La Mamounia entrance.jpg'), WC('La Mamounia interior.jpg'), WC('La Mamounia outdoor pool.jpg')] },
+  { name: 'Eichardt’s Private Hotel', city: 'Queenstown, New Zealand', starRating: 5, guestScore: 9.3, reviewsCount: 640, pricePerNight: 380, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
+    images: [WC("Eichardt's Hotel 642.jpg"), WC("Eichardt's Hotel 963.jpg"), WC("Eichardt's hotel restaurant 01.jpg")] },
+  { name: 'Memmo Alfama Hotel', city: 'Lisbon, Portugal', starRating: 4, guestScore: 9.0, reviewsCount: 2980, pricePerNight: 160, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
+    images: [
+      'https://static.guestcentric.net/bin/1e4cb8b06c6e9c4d/memmo-alfama-bannermemmo-alfama_banner-inicial_new2.webp',
+      'https://static.guestcentric.net/bin/1e4cb8b06c6e9c4d/memmo-alfama-bannermemmo-alfama_banner-inicial_new3.webp',
+    ] },
+  { name: 'EOLO Patagonia’s Spirit', city: 'Patagonia, Argentina', starRating: 5, guestScore: 9.4, reviewsCount: 410, pricePerNight: 470, freeCancellation: false, amenities: ['Free WiFi', 'Breakfast included'],
+    images: [
+      'https://www.eolopatagonia.com/images/slider_home/slide1.jpg',
+      'https://www.eolopatagonia.com/images/slider_home/slide2.jpg',
+      'https://www.eolopatagonia.com/images/slider_home/slide3.jpg',
+    ] },
+];
+
+export async function seedHotelsIfEmpty(): Promise<void> {
+  const conn = await pool.getConnection();
+  try {
+    const [rows] = await conn.query('SELECT COUNT(*) AS cnt FROM hotels') as [{ cnt: number }[], unknown];
+    if (rows[0].cnt > 0) {
+      console.log('ℹ️  Hotels already seeded — skipping');
+      return;
+    }
+
+    console.log('🌱 Seeding hotels…');
+    for (const h of hotels) {
+      await conn.query(
+        `INSERT INTO hotels
+           (name, city, starRating, guestScore, reviewsCount, pricePerNight, freeCancellation, amenities, images)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          h.name, h.city, h.starRating, h.guestScore, h.reviewsCount, h.pricePerNight, h.freeCancellation,
+          JSON.stringify(h.amenities), JSON.stringify(h.images),
+        ],
+      );
+    }
+    console.log(`✅ Seeded ${hotels.length} hotels`);
+  } finally {
+    conn.release();
+  }
+}
+
 export async function seedIfEmpty(): Promise<void> {
   const conn = await pool.getConnection();
   try {

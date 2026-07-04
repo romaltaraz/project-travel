@@ -7,6 +7,7 @@ import { addToast } from '../store/uiSlice';
 import LoadingSpinner from '../components/Common/LoadingSpinner';
 import { getImageUrl } from '../services/api';
 import { Booking } from '../types';
+import { ArrowRight } from 'lucide-react';
 
 const CalendarIcon = () => (
   <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
@@ -151,12 +152,12 @@ const BookingRow: React.FC<{ booking: Booking; view: 'grid' | 'list' }> = ({ boo
 
         <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
           <span className="font-bold text-primary-500 dark:text-primary-400">${booking.totalPrice.toLocaleString()}</span>
-          <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+          <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${
             isConfirmed
               ? 'bg-[rgb(240,253,240)] text-[#2f7f33] dark:bg-emerald-900/30 dark:text-emerald-400'
               : 'bg-[rgb(254,242,242)] text-[#dc2626] dark:bg-red-900/30 dark:text-red-400'
           }`}>
-            {isConfirmed ? '✓ Confirmed' : '✗ Cancelled'}
+            {isConfirmed ? <><CheckIcon /> Confirmed</> : <><XIcon /> Cancelled</>}
           </span>
         </div>
       </div>
@@ -184,8 +185,8 @@ const BookingRow: React.FC<{ booking: Booking; view: 'grid' | 'list' }> = ({ boo
           <span className="text-white font-extrabold text-2xl">${booking.totalPrice.toLocaleString()}</span>
           <span className="text-white/90 text-sm">{booking.numTravelers} traveler{booking.numTravelers > 1 ? 's' : ''}</span>
           <span className="text-white/90 text-sm">{start} – {end}</span>
-          <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full border border-white/30">
-            {isConfirmed ? '✓ Confirmed' : '✗ Cancelled'}
+          <span className="inline-flex items-center gap-1 bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full border border-white/30">
+            {isConfirmed ? <><CheckIcon /> Confirmed</> : <><XIcon /> Cancelled</>}
           </span>
         </div>
       </div>
@@ -304,7 +305,7 @@ const MyBookings: React.FC = () => {
         <div className="text-center py-20">
           <p className="text-gray-400 dark:text-gray-500 text-lg mb-5">No bookings yet.</p>
           <Link to="/vacations" className="inline-flex items-center gap-2 px-6 py-3 bg-accent-500 hover:bg-accent-600 text-white rounded-2xl font-bold transition-colors shadow-sm">
-            Browse Vacations →
+            Browse Vacations <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       )}

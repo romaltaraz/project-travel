@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer      from './authSlice';
 import vacationsReducer from './vacationsSlice';
+import hotelsReducer    from './hotelsSlice';
 import bookingsReducer  from './bookingsSlice';
 import reviewsReducer   from './reviewsSlice';
 import aiChatReducer    from './aiChatSlice';
@@ -10,6 +11,7 @@ export const store = configureStore({
   reducer: {
     auth:      authReducer,
     vacations: vacationsReducer,
+    hotels:    hotelsReducer,
     bookings:  bookingsReducer,
     reviews:   reviewsReducer,
     aiChat:    aiChatReducer,

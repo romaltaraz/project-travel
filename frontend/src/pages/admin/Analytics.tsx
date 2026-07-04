@@ -3,6 +3,7 @@ import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   BarChart, Bar, Cell,
 } from 'recharts';
+import { DollarSign, Ticket, Users, Star, Heart, ExternalLink } from 'lucide-react';
 import { analyticsService } from '../../services/analyticsService';
 import { AnalyticsOverview, RevenueByMonth, PopularVacation } from '../../types';
 import LoadingSpinner from '../../components/Common/LoadingSpinner';
@@ -10,10 +11,20 @@ import StarRating from '../../components/Common/StarRating';
 
 type Tab = 'bookings' | 'likes' | 'rating';
 
-const KpiCard: React.FC<{ label: string; value: string; icon: string; sub?: string }> = ({ label, value, icon, sub }) => (
+/** Triggers a browser download for a blob without navigating away from the page. */
+function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+const KpiCard: React.FC<{ label: string; value: string; icon: React.ReactNode; iconClassName: string; sub?: string }> = ({ label, value, icon, iconClassName, sub }) => (
   <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
     <div className="flex items-center justify-between mb-3">
-      <span className="text-2xl">{icon}</span>
+      <span className={`w-9 h-9 rounded-xl flex items-center justify-center ${iconClassName}`}>{icon}</span>
       <span className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider font-medium">{label}</span>
     </div>
     <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
@@ -32,6 +43,8 @@ const Analytics: React.FC = () => {
   const [error,     setError]     = useState<string | null>(null);
   const [tab,       setTab]       = useState<Tab>('bookings');
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [csvLoading, setCsvLoading] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
@@ -41,12 +54,12 @@ const Analytics: React.FC = () => {
         analyticsService.getOverview(),
         analyticsService.getRevenueByMonth(),
         analyticsService.getPopularVacations(),
-        fetch('/api/reports/likes', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }).then(r => r.json()),
+        analyticsService.getLikesReport(),
       ]);
       setOverview(ov.data);
       setRevenue(rev.data);
       setPopular(pop.data);
-      setLikesData(likes);
+      setLikesData(likes.data);
     } catch {
       setError('Failed to load analytics data.');
     } finally {
@@ -58,21 +71,40 @@ const Analytics: React.FC = () => {
 
   const handlePdfExport = async () => {
     setPdfLoading(true);
+    setExportError(null);
     try {
-      const token = localStorage.getItem('token');
-      const res   = await fetch('/api/reports/export/pdf', { headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) throw new Error('PDF generation failed');
-      const blob = await res.blob();
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href     = url;
-      a.download = 'vacations-report.pdf';
-      a.click();
-      URL.revokeObjectURL(url);
+      const res = await analyticsService.exportPdf();
+      downloadBlob(res.data as Blob, 'vacations-report.pdf');
     } catch {
-      alert('PDF export failed. Please try again.');
+      setExportError('PDF export failed. Please try again.');
     } finally {
       setPdfLoading(false);
+    }
+  };
+
+  const handleCsvExport = async () => {
+    setCsvLoading(true);
+    setExportError(null);
+    try {
+      const res = await analyticsService.exportLikesCsv();
+      downloadBlob(res.data as Blob, 'likes-report.csv');
+    } catch {
+      setExportError('CSV export failed. Please try again.');
+    } finally {
+      setCsvLoading(false);
+    }
+  };
+
+  const handleViewJson = async () => {
+    setExportError(null);
+    try {
+      const res = await analyticsService.getLikesReport();
+      const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch {
+      setExportError('Could not load JSON. Please try again.');
     }
   };
 
@@ -96,12 +128,13 @@ const Analytics: React.FC = () => {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-2xl font-display font-extrabold text-gray-900 dark:text-white">Analytics Dashboard</h1>
         <div className="flex gap-2 flex-wrap">
-          <a
-            href="/api/reports/likes/csv"
-            className="px-4 py-2 text-sm font-semibold border border-gray-200 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          <button
+            onClick={handleCsvExport}
+            disabled={csvLoading}
+            className="px-4 py-2 text-sm font-semibold border border-gray-200 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-60 transition-colors"
           >
-            CSV Export
-          </a>
+            {csvLoading ? 'Exporting…' : 'CSV Export'}
+          </button>
           <button
             onClick={handlePdfExport}
             disabled={pdfLoading}
@@ -112,14 +145,23 @@ const Analytics: React.FC = () => {
         </div>
       </div>
 
+      {exportError && (
+        <p className="text-sm text-red-500 -mt-4">{exportError}</p>
+      )}
+
       {/* KPI Cards */}
       {overview && (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <KpiCard label="Revenue"    value={`$${overview.totalRevenue.toLocaleString()}`}   icon="💰" />
-          <KpiCard label="Bookings"   value={String(overview.totalBookings)}                 icon="🎫" />
-          <KpiCard label="Users"      value={String(overview.totalUsers)}                    icon="👥" />
-          <KpiCard label="Avg Rating" value={`${overview.averageRating} / 5`}               icon="⭐" />
-          <KpiCard label="Likes"      value={String(overview.totalLikes)}                    icon="❤️" />
+          <KpiCard label="Revenue"    value={`$${overview.totalRevenue.toLocaleString()}`}
+            icon={<DollarSign className="w-5 h-5" />} iconClassName="bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400" />
+          <KpiCard label="Bookings"   value={String(overview.totalBookings)}
+            icon={<Ticket className="w-5 h-5" />} iconClassName="bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400" />
+          <KpiCard label="Users"      value={String(overview.totalUsers)}
+            icon={<Users className="w-5 h-5" />} iconClassName="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" />
+          <KpiCard label="Avg Rating" value={`${overview.averageRating} / 5`}
+            icon={<Star className="w-5 h-5" />} iconClassName="bg-accent-50 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400" />
+          <KpiCard label="Likes"      value={String(overview.totalLikes)}
+            icon={<Heart className="w-5 h-5" />} iconClassName="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400" />
         </div>
       )}
 
@@ -157,13 +199,13 @@ const Analytics: React.FC = () => {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-4 py-1.5 text-sm rounded-lg font-medium transition-colors capitalize ${
+              className={`inline-flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-lg font-medium transition-colors capitalize ${
                 tab === t
                   ? 'bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
-              {t === 'bookings' ? '🎫 Bookings' : t === 'likes' ? '❤️ Likes' : '⭐ Rating'}
+              {t === 'bookings' ? <><Ticket className="w-3.5 h-3.5" /> Bookings</> : t === 'likes' ? <><Heart className="w-3.5 h-3.5" /> Likes</> : <><Star className="w-3.5 h-3.5" /> Rating</>}
             </button>
           ))}
         </div>
@@ -176,8 +218,8 @@ const Analytics: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate max-w-[200px]">{v.destination}</p>
                   <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                    <span>🎫 {v.bookingsCount}</span>
-                    <span>❤️ {v.likesCount}</span>
+                    <span className="inline-flex items-center gap-1"><Ticket className="w-3.5 h-3.5" /> {v.bookingsCount}</span>
+                    <span className="inline-flex items-center gap-1"><Heart className="w-3.5 h-3.5 text-red-400" fill="currentColor" /> {v.likesCount}</span>
                     <StarRating value={v.averageRating} size="sm" />
                   </div>
                 </div>
@@ -198,14 +240,12 @@ const Analytics: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">Likes per Destination</h2>
-          <a
-            href="/api/reports/likes"
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs text-primary-600 dark:text-primary-400 hover:underline"
+          <button
+            onClick={handleViewJson}
+            className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:underline cursor-pointer"
           >
-            View JSON ↗
-          </a>
+            View JSON <ExternalLink className="w-3 h-3" />
+          </button>
         </div>
         {likesData.length === 0 ? (
           <p className="text-center text-sm text-gray-400 py-10">No likes data yet.</p>

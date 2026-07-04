@@ -85,3 +85,22 @@ export interface LikesReport {
   destination: string;
   likesCount: number;
 }
+
+export interface Hotel {
+  id: number;
+  name: string;
+  city: string;
+  starRating: number;
+  guestScore: number;
+  reviewsCount: number;
+  pricePerNight: number;
+  freeCancellation: boolean;
+  amenities: string[];
+  images: string[];
+  createdAt: Date;
+}
+
+export interface HotelWithLikes extends Hotel {
+  likesCount: number;
+  likedByMe: boolean;
+}

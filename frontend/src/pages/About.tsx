@@ -72,7 +72,7 @@ const DESTINATION_CARDS = [
 
 const stats = [
   { icon: <GlobeIcon />,   num: '22+',   label: 'Destinations',      color: 'text-primary-300'  },
-  { icon: <StarIcon />,    num: '4.8★',  label: 'Average Rating',    color: 'text-amber-300'    },
+  { icon: <StarIcon />,    num: '4.8',   label: 'Average Rating',    color: 'text-amber-300'    },
   { icon: <UsersIcon />,   num: '10k+',  label: 'Happy Travelers',   color: 'text-emerald-300'  },
   { icon: <SparkleIcon />, num: 'AI',    label: 'Powered Planning',  color: 'text-violet-300'   },
 ];

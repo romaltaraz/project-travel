@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft, Heart } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
 import { fetchReviews, submitReview } from '../store/reviewsSlice';
@@ -81,7 +82,7 @@ const VacationDetail: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <button onClick={() => navigate(-1)} className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:underline mb-6 flex items-center gap-1 cursor-pointer">
-        ← Back
+        <ArrowLeft className="w-4 h-4" /> Back
       </button>
 
       {/* Hero image */}
@@ -111,8 +112,8 @@ const VacationDetail: React.FC = () => {
           {!isAdmin && (
             <div className="flex gap-2">
               <button onClick={handleLike}
-                className={`px-4 py-2 rounded-xl border text-sm font-semibold transition-colors cursor-pointer ${vacation.likedByMe ? 'bg-rose-50 border-rose-300 text-rose-600 dark:bg-rose-900/20 dark:border-rose-700 dark:text-rose-400' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-rose-300 hover:text-rose-500'}`}>
-                {vacation.likedByMe ? '♥ Liked' : '♡ Like'}
+                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-sm font-semibold transition-colors cursor-pointer ${vacation.likedByMe ? 'bg-rose-50 border-rose-300 text-rose-600 dark:bg-rose-900/20 dark:border-rose-700 dark:text-rose-400' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-rose-300 hover:text-rose-500'}`}>
+                <Heart className="w-4 h-4" fill={vacation.likedByMe ? 'currentColor' : 'none'} /> {vacation.likedByMe ? 'Liked' : 'Like'}
               </button>
               <button onClick={() => setShowBooking(true)}
                 className="px-5 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-xl text-sm font-bold transition-colors shadow-sm hover:shadow-md cursor-pointer">
@@ -132,10 +133,10 @@ const VacationDetail: React.FC = () => {
           <p className="font-display font-bold text-primary-800 dark:text-primary-300">Plan this trip with AI</p>
           <p className="text-sm text-primary-600 dark:text-primary-400 mt-0.5">Get a personalised day-by-day itinerary</p>
         </div>
-        <a href="/trip-planner"
+        <Link to="/trip-planner" state={{ destination: vacation.destination }}
           className="px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-xl text-sm font-bold transition-colors shadow-sm flex-shrink-0">
           Plan My Trip
-        </a>
+        </Link>
       </div>
 
       {/* Reviews */}

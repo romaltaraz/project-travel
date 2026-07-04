@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { TripPlan, TripPlanDay } from '../types';
 import api from '../services/api';
 
@@ -121,7 +121,10 @@ const DayCard: React.FC<{ day: TripPlanDay; index: number }> = ({ day, index }) 
 type Pace = 'slow' | 'fast';
 
 const TripPlanner: React.FC = () => {
-  const [destination, setDestination] = useState('');
+  const location = useLocation();
+  const [destination, setDestination] = useState(
+    (location.state as { destination?: string } | null)?.destination ?? ''
+  );
   const [days,        setDays]        = useState(7);
   const [pace,        setPace]        = useState<Pace>('slow');
   const [plan,        setPlan]        = useState<TripPlan | null>(null);

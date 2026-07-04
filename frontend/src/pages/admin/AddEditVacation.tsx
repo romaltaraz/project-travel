@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { addToast } from '../../store/uiSlice';
@@ -50,8 +51,8 @@ const AddEditVacation: React.FC = () => {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-8">
-      <button onClick={() => navigate(-1)} className="text-sm text-primary-600 dark:text-primary-400 hover:underline mb-6 block">
-        ← Back
+      <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-primary-600 dark:text-primary-400 hover:underline mb-6 cursor-pointer">
+        <ArrowLeft className="w-4 h-4" /> Back
       </button>
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
         {isEdit ? 'Edit Vacation' : 'Add New Vacation'}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { X, Calendar, ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import { Vacation, PaymentDetails } from '../../types';
 import { createBooking, clearLastCreated } from '../../store/bookingsSlice';
 import { AppDispatch, RootState } from '../../store';
@@ -51,14 +52,14 @@ const BookingModal: React.FC<Props> = ({ vacation, onClose }) => {
             <h2 className="text-lg font-bold dark:text-white">
               {step === 'success' ? 'Booking Confirmed!' : `Book — ${vacation.destination}`}
             </h2>
-            <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl leading-none" aria-label="Close">×</button>
+            <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer" aria-label="Close"><X className="w-5 h-5" /></button>
           </div>
 
           {/* Step 1 — Travelers */}
           {step === 'travelers' && (
             <div className="space-y-6">
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 text-sm space-y-1">
-                <p className="font-medium text-gray-700 dark:text-gray-300">📅 {fmtDate(vacation.startDate)} – {fmtDate(vacation.endDate)}</p>
+                <p className="flex items-center gap-1.5 font-medium text-gray-700 dark:text-gray-300"><Calendar className="w-4 h-4 text-primary-500" /> {fmtDate(vacation.startDate)} – {fmtDate(vacation.endDate)}</p>
                 <p className="text-gray-500">${vacation.price.toLocaleString()} per person</p>
               </div>
 
@@ -76,8 +77,8 @@ const BookingModal: React.FC<Props> = ({ vacation, onClose }) => {
                 <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">${totalPrice.toLocaleString()}</span>
               </div>
 
-              <button onClick={() => setStep('payment')} className="w-full py-3 bg-accent-500 text-white font-bold rounded-xl hover:bg-accent-600 transition-colors">
-                Continue to Payment →
+              <button onClick={() => setStep('payment')} className="w-full py-3 bg-accent-500 text-white font-bold rounded-xl hover:bg-accent-600 transition-colors inline-flex items-center justify-center gap-1.5">
+                Continue to Payment <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -93,7 +94,7 @@ const BookingModal: React.FC<Props> = ({ vacation, onClose }) => {
               {!loading && (
                 <>
                   <MockPaymentForm onSubmit={handlePayment} loading={loading} />
-                  <button onClick={() => setStep('travelers')} className="w-full text-sm text-gray-500 hover:text-gray-700 py-2">← Back</button>
+                  <button onClick={() => setStep('travelers')} className="w-full inline-flex items-center justify-center gap-1 text-sm text-gray-500 hover:text-gray-700 py-2"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
                 </>
               )}
             </div>
@@ -119,8 +120,8 @@ const BookingModal: React.FC<Props> = ({ vacation, onClose }) => {
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {numTravelers} traveler{numTravelers > 1 ? 's' : ''} · ${lastCreated.totalPrice.toLocaleString()} total
               </p>
-              <button onClick={handleClose} className="w-full py-3 bg-accent-500 text-white font-bold rounded-xl hover:bg-accent-600 transition-colors">
-                ✓ Done
+              <button onClick={handleClose} className="w-full py-3 bg-accent-500 text-white font-bold rounded-xl hover:bg-accent-600 transition-colors inline-flex items-center justify-center gap-1.5">
+                <Check className="w-4 h-4" /> Done
               </button>
             </div>
           )}

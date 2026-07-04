@@ -58,3 +58,25 @@ CREATE TABLE IF NOT EXISTS bookings (
   FOREIGN KEY (vacationId) REFERENCES vacations(id) ON DELETE CASCADE,
   CONSTRAINT chk_travelers CHECK (numTravelers >= 1)
 );
+
+CREATE TABLE IF NOT EXISTS hotels (
+  id               INT AUTO_INCREMENT PRIMARY KEY,
+  name             VARCHAR(150)   NOT NULL,
+  city             VARCHAR(100)   NOT NULL,
+  starRating       INT            NOT NULL,
+  guestScore       DECIMAL(3,1)   NOT NULL,
+  reviewsCount     INT            NOT NULL DEFAULT 0,
+  pricePerNight    DECIMAL(8,2)   NOT NULL,
+  freeCancellation BOOLEAN        NOT NULL DEFAULT FALSE,
+  amenities        JSON           NOT NULL,
+  images           JSON           NOT NULL,
+  createdAt        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS hotel_likes (
+  userId   INT NOT NULL,
+  hotelId  INT NOT NULL,
+  PRIMARY KEY (userId, hotelId),
+  FOREIGN KEY (userId)  REFERENCES users(id)  ON DELETE CASCADE,
+  FOREIGN KEY (hotelId) REFERENCES hotels(id) ON DELETE CASCADE
+);

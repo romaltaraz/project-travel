@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Props {
   page: number;
@@ -23,9 +24,9 @@ const Pagination: React.FC<Props> = ({ page, totalPages, onPageChange }) => {
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
-        className="px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-50 dark:hover:bg-primary-900 transition-colors"
+        className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-50 dark:hover:bg-primary-900 transition-colors cursor-pointer"
       >
-        ← Prev
+        <ChevronLeft className="w-4 h-4" /> Prev
       </button>
 
       {pages.map((p, i) =>
@@ -50,9 +51,9 @@ const Pagination: React.FC<Props> = ({ page, totalPages, onPageChange }) => {
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
-        className="px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-50 dark:hover:bg-primary-900 transition-colors"
+        className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-50 dark:hover:bg-primary-900 transition-colors cursor-pointer"
       >
-        Next →
+        Next <ChevronRight className="w-4 h-4" />
       </button>
     </nav>
   );

@@ -1,8 +1,12 @@
 import { Response } from 'express';
 import { z } from 'zod';
+import fs from 'fs';
+import path from 'path';
 import { AuthRequest } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { askClaude, assertApiKey } from '../services/anthropic.service.js';
+import { searchMagnificPhoto } from '../services/magnific.service.js';
+import { searchWikimediaPhoto } from '../services/wikimedia.service.js';
 import { tripPlanCache } from '../services/tripPlannerCache.js';
 import { pool } from '../config/db.js';
 
@@ -297,4 +301,47 @@ export async function semanticSearch(req: AuthRequest, res: Response): Promise<v
   }));
 
   res.json({ query, filters, data, total: data.length });
+}
+
+// ---------------------------------------------------------------------------
+// AI Vacation Photo  —  POST /api/ai/vacation-photo
+// Finds a REAL photo of a destination — Magnific's stock-photo search first
+// (picks the most "attractive" relevance-ranked result), falling back to a
+// free Wikimedia Commons search if Magnific is unavailable or has no match.
+// Saves the chosen photo into /uploads so the admin form can use it exactly
+// like a manual upload. `page` lets the admin cycle through further results
+// via "Search again".
+// ---------------------------------------------------------------------------
+const vacationPhotoSchema = z.object({
+  destination: z.string().min(1).max(200),
+  page: z.number().int().min(1).max(20).optional(),
+});
+
+const UPLOAD_DIR = path.join(__dirname, '../../uploads');
+export const AI_IMAGE_PREFIX = 'vacation-ai-';
+
+export async function generateVacationPhoto(req: AuthRequest, res: Response): Promise<void> {
+  const parsed = vacationPhotoSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'destination is required' });
+    return;
+  }
+
+  const { destination } = parsed.data;
+  const page = parsed.data.page ?? 1;
+
+  const found = (await searchMagnificPhoto(destination, page)) ?? (await searchWikimediaPhoto(destination, page));
+  if (!found) {
+    throw new AppError('No photo found for this destination — try different wording or upload one manually', 404);
+  }
+
+  const imgRes = await fetch(found.imageUrl);
+  if (!imgRes.ok) throw new AppError('Could not download the selected photo', 502);
+  const imageBuffer = Buffer.from(await imgRes.arrayBuffer());
+
+  const ext = found.imageUrl.toLowerCase().endsWith('.png') ? '.png' : '.jpg';
+  const imageFileName = `${AI_IMAGE_PREFIX}${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`;
+  fs.writeFileSync(path.join(UPLOAD_DIR, imageFileName), imageBuffer);
+
+  res.json({ imageFileName, source: found.source });
 }

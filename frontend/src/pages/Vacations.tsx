@@ -1,129 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
+import { Heart, ShieldCheck, Coffee, X, PackageOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Hotel } from '../types';
 import { AppDispatch, RootState } from '../store';
 import { fetchVacations, setPage, setFilters } from '../store/vacationsSlice';
+import { fetchHotels, likeHotel, unlikeHotel } from '../store/hotelsSlice';
 import VacationCard from '../components/Vacations/VacationCard';
 import VacationFiltersBar from '../components/Vacations/VacationFilters';
 import Pagination from '../components/Common/Pagination';
 import LoadingSpinner from '../components/Common/LoadingSpinner';
 import { FlightCard, FlightCardProps } from '../components/ui/flight-card-1';
-import { HotelCard, HotelCardProps } from '../components/ui/hotel-card-1';
-
-// Real photos of each named hotel: Wikimedia Commons (freely licensed) where available,
-// otherwise the hotel's own official site (their copyrighted marketing photos — fine for
-// this demo, not for commercial reuse without permission).
-const WC = (file: string) => `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}`;
-
-// Hotels across all vacation destinations
-const HOTELS: (HotelCardProps & { id: string })[] = [
-  { id: 'rome', name: 'Hotel Artemide', city: 'Rome, Italy', starRating: 4, guestScore: 8.6, reviewsCount: 4210, pricePerNight: 180, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
-    images: [
-      'https://www.hotelartemide.it/static/ee6ae7db978739bb0f8f969d03796604/ff2b2/8dfdb95c-05ea-4fbc-92cd-c22fb3a54562.jpg',
-      'https://www.hotelartemide.it/static/bfefbb4c07326bb12cc39d40a6e526f4/ba0b2/9a0380ff-f194-4314-b5df-2adb5d847d74.jpg',
-      'https://www.hotelartemide.it/static/c8ec2ae85589b1ef995317a5cb6b0496/ff2b2/c8a9414b-7760-4bcd-9076-7b8019cf245c.jpg',
-    ] },
-  { id: 'paris', name: 'Hôtel Le Six', city: 'Paris, France', starRating: 4, guestScore: 8.9, reviewsCount: 3120, pricePerNight: 220, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
-    images: [
-      'https://www.hotel-le-six.com/cache/img/home-67813-1620-720-auto.jpeg',
-      'https://www.hotel-le-six.com/cache/img/le-six-hotel-lounge-67964-800-950-auto.jpg',
-      'https://www.hotel-le-six.com/cache/img/le-six-hotel-breakfast-67958-540-360-crop.jpg',
-    ] },
-  { id: 'tokyo', name: 'Shinjuku Granbell Hotel', city: 'Tokyo, Japan', starRating: 4, guestScore: 8.7, reviewsCount: 5860, pricePerNight: 150, freeCancellation: true, amenities: ['Free WiFi'],
-    images: [
-      WC('Shinjuku Granbell Hotel, Tokyo, 2019 - 225.jpg'),
-      WC('Bathroom in the Shinjuku Granbell Hotel in Tokyo, 2019 - 001.jpg'),
-    ] },
-  { id: 'bali', name: 'The Kayon Resort', city: 'Bali, Indonesia', starRating: 5, guestScore: 9.1, reviewsCount: 2740, pricePerNight: 120, freeCancellation: true, amenities: ['Pool', 'Free WiFi', 'Breakfast included'],
-    images: [
-      'https://thekayonresort.com/wp-content/uploads/2025/01/header-kayon-royal-retreat.jpg',
-      'https://thekayonresort.com/wp-content/uploads/2024/10/river-edge-pool-villa.jpg',
-      'https://thekayonresort.com/wp-content/uploads/2024/10/kayon-river-suite.jpg',
-    ] },
-  { id: 'santorini', name: 'Canaves Oia Suites', city: 'Santorini, Greece', starRating: 5, guestScore: 9.4, reviewsCount: 1980, pricePerNight: 340, freeCancellation: false, amenities: ['Pool', 'Free WiFi', 'Breakfast included'],
-    images: [
-      'https://canaves.com/wp-content/uploads/2024/12/5_luxury_star_hotel_santorini_oia_canaves-_suites_gallery-2-600x389.jpg',
-      'https://canaves.com/wp-content/uploads/2024/12/5_luxury_star_hotel_santorini_oia_canaves-_suites_gallery-4-600x439.jpg',
-      'https://canaves.com/wp-content/uploads/2024/12/5_luxury_star_hotel_santorini_oia_canaves-_suites_gallery-7-600x1062.jpg',
-    ] },
-  { id: 'barcelona', name: 'Hotel Casa Bonay', city: 'Barcelona, Spain', starRating: 4, guestScore: 8.8, reviewsCount: 3340, pricePerNight: 190, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
-    images: [
-      'https://cdn-hhbfohb.nitrocdn.com/MWVuFFQrOubRCgucqTrIdzQgXRECTcge/assets/images/optimized/rev-54fad52/casabonay.com/wp-content/uploads/2021/08/ATP2775@antp-scaled-e1628597088539-659x879.jpg',
-      'https://cdn-hhbfohb.nitrocdn.com/MWVuFFQrOubRCgucqTrIdzQgXRECTcge/assets/images/optimized/rev-54fad52/casabonay.com/wp-content/uploads/2016/05/CASA_BONAY_SAILING-CLUB-999x660.jpg',
-      'https://cdn-hhbfohb.nitrocdn.com/MWVuFFQrOubRCgucqTrIdzQgXRECTcge/assets/images/optimized/rev-54fad52/casabonay.com/wp-content/uploads/2018/02/DSC0429-999x660.jpg',
-    ] },
-  { id: 'newyork', name: 'The Pod Times Square', city: 'New York, USA', starRating: 3, guestScore: 8.2, reviewsCount: 9120, pricePerNight: 210, freeCancellation: true, amenities: ['Free WiFi'],
-    images: [
-      'https://assets.milestoneinternet.com/cdn-cgi/image/width=1800,height=1200,f=auto/pod-hotels/the-pod-hotels/siteimages/pod-rooms-pod-times-square-brooklyn-newyork.jpg',
-      'https://assets.milestoneinternet.com/cdn-cgi/image/f=auto/pod-hotels/the-pod-hotels/siteimages/pod-tsq-queen-pod.jpg',
-      'https://assets.milestoneinternet.com/cdn-cgi/image/f=auto/pod-hotels/the-pod-hotels/siteimages/pod-tsq-bunk-pod.jpg',
-    ] },
-  { id: 'maldives', name: 'Sun Siyam Iru Fushi', city: 'Maldives', starRating: 5, guestScore: 9.5, reviewsCount: 1420, pricePerNight: 480, freeCancellation: false, amenities: ['Pool', 'Beach access', 'Breakfast included'],
-    images: [
-      'https://www.sunsiyam.com/media/pxjjnfgw/dji_0180-1.jpg',
-      'https://www.sunsiyam.com/media/aeejkefc/irufushi_hidden_retreat_0129.jpg',
-      'https://www.sunsiyam.com/media/3kelpb2j/6g5a0110-avec-accentuation-nr-1.jpg',
-    ] },
-  { id: 'sydney', name: 'Ovolo Woolloomooloo', city: 'Sydney, Australia', starRating: 4, guestScore: 8.7, reviewsCount: 2650, pricePerNight: 200, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
-    images: [
-      WC('Blue Hotel Woolloomooloo, Sydney - panoramio.jpg'),
-      WC('Blue Hotel Interior I - panoramio.jpg'),
-      WC('(1)Finger Wharf-1.jpg'),
-    ] },
-  { id: 'capetown', name: 'The Silo Hotel', city: 'Cape Town, South Africa', starRating: 5, guestScore: 9.3, reviewsCount: 980, pricePerNight: 310, freeCancellation: true, amenities: ['Pool', 'Free WiFi', 'Spa'],
-    images: [
-      'https://wp.theroyalportfolio.com/app/uploads/2022/06/Silo-Hotel-2228-scaled.jpg',
-      'https://wp.theroyalportfolio.com/app/uploads/2022/06/DSC_2635_-scaled.jpg',
-    ] },
-  { id: 'machupicchu', name: 'Sumaq Machu Picchu Hotel', city: 'Machu Picchu, Peru', starRating: 5, guestScore: 9.2, reviewsCount: 760, pricePerNight: 260, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
-    images: [
-      'https://image-tc.galaxy.tf/wijpeg-9b8zh7l2e0tmfj13y1mmc5zcv/dsf3392_standard.jpg',
-      'https://image-tc.galaxy.tf/wijpeg-eqyh2gi0vya6yynvvmk7siwx6/room-sumaq-deluxe-garden-view_standard.jpg',
-      'https://image-tc.galaxy.tf/wijpeg-11eswlfjazo2rv69buoe72qke/fg8a3181-copia-copia_standard.jpg',
-    ] },
-  { id: 'dubai', name: 'Jumeirah Beach Hotel', city: 'Dubai, UAE', starRating: 5, guestScore: 9.0, reviewsCount: 6210, pricePerNight: 290, freeCancellation: true, amenities: ['Pool', 'Beach access', 'Free WiFi'],
-    images: [WC('MTM A8 in Dubai.jpg')] },
-  { id: 'amsterdam', name: 'Hotel V Nesplein', city: 'Amsterdam, Netherlands', starRating: 4, guestScore: 8.7, reviewsCount: 2890, pricePerNight: 175, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
-    images: [
-      'https://admin.hotelv.com/wp-content/uploads/2025/05/Gallery-slide-1-scaled.jpg',
-      'https://admin.hotelv.com/wp-content/uploads/2025/05/Gallery-slide-4.jpg',
-      'https://admin.hotelv.com/wp-content/uploads/2025/05/Gallery-slide-6-scaled.jpg',
-    ] },
-  { id: 'reykjavik', name: 'Reykjavik Konsulat Hotel', city: 'Reykjavik, Iceland', starRating: 4, guestScore: 8.9, reviewsCount: 1340, pricePerNight: 260, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
-    images: [
-      'https://www.reykjavikkonsulathotel.is/static/strevda/1522159717-_z9a3136-2.jpg',
-      'https://www.reykjavikkonsulathotel.is/static/strevda/1522141265-_z9a2890.jpg',
-      'https://www.reykjavikkonsulathotel.is/static/extras/images/.of/REKCUQQ-Lobby-Bar-Lounge%20(2)120.jpg',
-    ] },
-  { id: 'kyoto', name: 'The Ritz-Carlton Kyoto', city: 'Kyoto, Japan', starRating: 5, guestScore: 9.4, reviewsCount: 1150, pricePerNight: 420, freeCancellation: true, amenities: ['Free WiFi', 'Spa', 'Breakfast included'],
-    images: [WC('The Ritz-Carton Kyoto 2.jpg'), WC('The Ritz-Carton Kyoto.jpg')] },
-  { id: 'phuket', name: 'Trisara Phuket', city: 'Phuket, Thailand', starRating: 5, guestScore: 9.3, reviewsCount: 890, pricePerNight: 340, freeCancellation: false, amenities: ['Pool', 'Beach access', 'Spa'],
-    images: [WC('Thumb_Thailand_Phuket_NaithornBeach_TRISARA_Ocean_Front_Pool_Villa_View.jpg')] },
-  { id: 'amalfi', name: 'Le Sirenuse', city: 'Amalfi Coast, Italy', starRating: 5, guestScore: 9.5, reviewsCount: 1020, pricePerNight: 550, freeCancellation: false, amenities: ['Pool', 'Free WiFi', 'Breakfast included'],
-    images: [
-      'https://sirenuse.it/media/qxdob5yf/le-sirenuse-hotel-positano_views_9997.jpg',
-      'https://sirenuse.it/media/0s5ep1xf/le_sirenuse_pool-1042-1.jpg',
-      'https://sirenuse.it/media/qguhthws/le-sirenuse_room_junior-suite-superior-b1j_9627.jpg',
-    ] },
-  { id: 'havana', name: 'Hotel Nacional de Cuba', city: 'Havana, Cuba', starRating: 4, guestScore: 8.3, reviewsCount: 3560, pricePerNight: 140, freeCancellation: true, amenities: ['Pool', 'Free WiFi'],
-    images: [WC('Entrance to Hotel Nacional de Cuba in Old Havana.JPG'), WC('Cuba, Havana, Sunset over Hotel Nacional.jpg')] },
-  { id: 'marrakech', name: 'La Mamounia', city: 'Marrakech, Morocco', starRating: 5, guestScore: 9.2, reviewsCount: 2140, pricePerNight: 310, freeCancellation: true, amenities: ['Pool', 'Spa', 'Breakfast included'],
-    images: [WC('La Mamounia entrance.jpg'), WC('La Mamounia interior.jpg'), WC('La Mamounia outdoor pool.jpg')] },
-  { id: 'queenstown', name: 'Eichardt’s Private Hotel', city: 'Queenstown, New Zealand', starRating: 5, guestScore: 9.3, reviewsCount: 640, pricePerNight: 380, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
-    images: [WC("Eichardt's Hotel 642.jpg"), WC("Eichardt's Hotel 963.jpg"), WC("Eichardt's hotel restaurant 01.jpg")] },
-  { id: 'lisbon', name: 'Memmo Alfama Hotel', city: 'Lisbon, Portugal', starRating: 4, guestScore: 9.0, reviewsCount: 2980, pricePerNight: 160, freeCancellation: true, amenities: ['Free WiFi', 'Breakfast included'],
-    images: [
-      'https://static.guestcentric.net/bin/1e4cb8b06c6e9c4d/memmo-alfama-bannermemmo-alfama_banner-inicial_new2.webp',
-      'https://static.guestcentric.net/bin/1e4cb8b06c6e9c4d/memmo-alfama-bannermemmo-alfama_banner-inicial_new3.webp',
-    ] },
-  { id: 'patagonia', name: 'EOLO Patagonia’s Spirit', city: 'Patagonia, Argentina', starRating: 5, guestScore: 9.4, reviewsCount: 410, pricePerNight: 470, freeCancellation: false, amenities: ['Free WiFi', 'Breakfast included'],
-    images: [
-      'https://www.eolopatagonia.com/images/slider_home/slide1.jpg',
-      'https://www.eolopatagonia.com/images/slider_home/slide2.jpg',
-      'https://www.eolopatagonia.com/images/slider_home/slide3.jpg',
-    ] },
-];
+import { HotelCard } from '../components/ui/hotel-card-1';
 
 // Flights from Tel Aviv (TLV) to popular vacation destinations
 const FLIGHTS: (FlightCardProps & { id: string })[] = [
@@ -241,17 +130,29 @@ const cardVariants = {
 const Vacations: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { vacations, page, totalPages, filters, loading, error } = useSelector((s: RootState) => s.vacations);
+  const { hotels } = useSelector((s: RootState) => s.hotels);
   const { t } = useTranslation();
   const [vacationType, setVacationType] = useState<'packages' | 'hotels' | 'flights' | 'bundle'>('packages');
   const [hotelSearch, setHotelSearch] = useState('');
+  const [hotelFilters, setHotelFilters] = useState({ likedOnly: false, freeCancellationOnly: false, breakfastOnly: false });
 
   useEffect(() => {
     dispatch(fetchVacations({ page, filters }));
   }, [dispatch, page, filters]);
 
-  const filteredHotels = HOTELS.filter(h =>
-    h.city.toLowerCase().includes(hotelSearch.trim().toLowerCase()) ||
-    h.name.toLowerCase().includes(hotelSearch.trim().toLowerCase())
+  useEffect(() => {
+    dispatch(fetchHotels());
+  }, [dispatch]);
+
+  const toggleHotelLike = (h: Hotel) =>
+    dispatch(h.likedByMe ? unlikeHotel(h.id) : likeHotel(h.id));
+
+  const filteredHotels = hotels.filter(h =>
+    (h.city.toLowerCase().includes(hotelSearch.trim().toLowerCase()) ||
+      h.name.toLowerCase().includes(hotelSearch.trim().toLowerCase())) &&
+    (!hotelFilters.likedOnly || h.likedByMe) &&
+    (!hotelFilters.freeCancellationOnly || h.freeCancellation) &&
+    (!hotelFilters.breakfastOnly || h.amenities.includes('Breakfast included'))
   );
 
   return (
@@ -261,7 +162,40 @@ const Vacations: React.FC = () => {
           <h1 className="text-3xl font-display font-extrabold text-gray-900 dark:text-white">{t('vacations.title')}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Discover your next adventure</p>
         </div>
-        <VacationFiltersBar filters={filters} onChange={f => dispatch(setFilters(f))} />
+        {vacationType === 'hotels' ? (
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Hotel filters">
+            {[
+              { key: 'likedOnly' as const,             icon: <Heart className="w-3.5 h-3.5" fill={hotelFilters.likedOnly ? 'currentColor' : 'none'} />, label: 'Liked' },
+              { key: 'freeCancellationOnly' as const,  icon: <ShieldCheck className="w-3.5 h-3.5" />, label: 'Free cancellation' },
+              { key: 'breakfastOnly' as const,          icon: <Coffee className="w-3.5 h-3.5" />, label: 'Breakfast included' },
+            ].map(({ key, icon, label }) => (
+              <button
+                key={key}
+                onClick={() => setHotelFilters(f => ({ ...f, [key]: !f[key] }))}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
+                  hotelFilters[key]
+                    ? 'bg-primary-600 text-white border-primary-600 shadow-sm'
+                    : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400'
+                }`}
+                aria-pressed={hotelFilters[key]}
+              >
+                {icon}
+                {label}
+              </button>
+            ))}
+            {(hotelFilters.likedOnly || hotelFilters.freeCancellationOnly || hotelFilters.breakfastOnly) && (
+              <button
+                onClick={() => setHotelFilters({ likedOnly: false, freeCancellationOnly: false, breakfastOnly: false })}
+                className="inline-flex items-center gap-1 px-3.5 py-2 text-xs font-bold rounded-xl border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+                Clear
+              </button>
+            )}
+          </div>
+        ) : (
+          <VacationFiltersBar filters={filters} onChange={f => dispatch(setFilters(f))} />
+        )}
       </div>
 
       {loading && <div className="py-20"><LoadingSpinner size="lg" /></div>}
@@ -275,7 +209,7 @@ const Vacations: React.FC = () => {
 
       {!loading && vacations.length > 0 && (
         <>
-          <div className="flex gap-1.5 p-1 bg-white rounded-xl border border-gray-200 shadow-sm mb-4 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:overflow-visible">
+          <div className="flex gap-1.5 p-1 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-4 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:overflow-visible">
             {[
               { id: 'packages', label: 'Vacations', icon: (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
@@ -305,7 +239,7 @@ const Vacations: React.FC = () => {
                             text-xs font-semibold transition-all whitespace-nowrap border-0
                             ${vacationType === tab.id
                               ? 'bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-md'
-                              : 'bg-transparent text-gray-500 hover:bg-green-50 hover:text-green-700'
+                              : 'bg-transparent text-gray-500 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-400'
                             }`}
               >
                 {tab.icon}
@@ -341,7 +275,7 @@ const Vacations: React.FC = () => {
                     value={hotelSearch}
                     onChange={e => setHotelSearch(e.target.value)}
                     placeholder="Search by city or country…"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
                   />
                 </div>
               </div>
@@ -350,7 +284,14 @@ const Vacations: React.FC = () => {
                 <p className="text-center text-gray-400 py-16">No hotels found for “{hotelSearch}”.</p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {filteredHotels.map(h => <HotelCard key={h.id} {...h} />)}
+                  {filteredHotels.map(h => (
+                    <HotelCard
+                      key={h.id}
+                      {...h}
+                      liked={h.likedByMe}
+                      onToggleLike={() => toggleHotelLike(h)}
+                    />
+                  ))}
                 </div>
               )}
             </div>
@@ -358,7 +299,7 @@ const Vacations: React.FC = () => {
 
           {vacationType === 'bundle' && (
             <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-              <span className="text-5xl mb-4">📦</span>
+              <PackageOpen className="w-12 h-12 mb-4 text-gray-300 dark:text-gray-600" strokeWidth={1.5} />
               <p className="font-semibold text-gray-600 text-base mb-2">Flight + Hotel</p>
               <p>Coming soon</p>
             </div>
