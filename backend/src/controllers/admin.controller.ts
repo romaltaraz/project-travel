@@ -50,3 +50,18 @@ export async function analyticsPopularVacations(_req: AuthRequest, res: Response
   const data = await analyticsRepo.getPopularVacations();
   res.json(data);
 }
+
+export async function analyticsBookingStatus(_req: AuthRequest, res: Response): Promise<void> {
+  const data = await analyticsRepo.getBookingStatusBreakdown();
+  res.json(data);
+}
+
+export async function analyticsRatingDistribution(_req: AuthRequest, res: Response): Promise<void> {
+  const data = await analyticsRepo.getRatingDistribution();
+  res.json(data);
+}
+
+export async function analyticsRatingsByDestination(_req: AuthRequest, res: Response): Promise<void> {
+  const data = await analyticsRepo.getRatingsByDestination();
+  res.json(data);
+}

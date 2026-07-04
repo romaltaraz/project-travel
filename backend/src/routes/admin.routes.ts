@@ -13,5 +13,8 @@ router.put('/bookings/:id', requireAdmin, asyncHandler(adminCtrl.adminUpdateBook
 router.get('/analytics/overview',          requireAdmin, asyncHandler(adminCtrl.analyticsOverview));
 router.get('/analytics/revenue-by-month',  requireAdmin, asyncHandler(adminCtrl.analyticsRevenueByMonth));
 router.get('/analytics/popular-vacations', requireAdmin, asyncHandler(adminCtrl.analyticsPopularVacations));
+router.get('/analytics/booking-status',    requireAdmin, asyncHandler(adminCtrl.analyticsBookingStatus));
+router.get('/analytics/rating-distribution', requireAdmin, asyncHandler(adminCtrl.analyticsRatingDistribution));
+router.get('/analytics/ratings-by-destination', requireAdmin, asyncHandler(adminCtrl.analyticsRatingsByDestination));
 
 export default router;

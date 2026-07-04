@@ -5,17 +5,64 @@ export async function getOverview() {
     SELECT
       (SELECT COUNT(*) FROM users WHERE role = 'user')                            AS totalUsers,
       (SELECT COUNT(*) FROM bookings WHERE status = 'confirmed')                  AS totalBookings,
+      (SELECT COALESCE(SUM(numTravelers), 0) FROM bookings WHERE status = 'confirmed') AS totalTravelers,
       (SELECT COALESCE(SUM(totalPrice), 0) FROM bookings WHERE status = 'confirmed') AS totalRevenue,
       (SELECT COALESCE(AVG(rating), 0) FROM reviews)                              AS averageRating,
       (SELECT COUNT(*) FROM likes)                                                 AS totalLikes
   `) as [[Record<string, unknown>], unknown];
   return {
-    totalUsers:    Number(row.totalUsers),
-    totalBookings: Number(row.totalBookings),
-    totalRevenue:  Number(row.totalRevenue),
-    averageRating: Number(Number(row.averageRating).toFixed(2)),
-    totalLikes:    Number(row.totalLikes),
+    totalUsers:      Number(row.totalUsers),
+    totalBookings:   Number(row.totalBookings),
+    totalTravelers:  Number(row.totalTravelers),
+    totalRevenue:    Number(row.totalRevenue),
+    averageRating:   Number(Number(row.averageRating).toFixed(2)),
+    totalLikes:      Number(row.totalLikes),
   };
+}
+
+export async function getBookingStatusBreakdown() {
+  const [rows] = await pool.query(
+    `SELECT status, COUNT(*) AS count FROM bookings GROUP BY status`,
+  ) as [{ status: string; count: string }[], unknown];
+  return rows.map(r => ({ status: r.status, count: Number(r.count) }));
+}
+
+export async function getRatingDistribution() {
+  const [rows] = await pool.query(
+    `SELECT rating, COUNT(*) AS count FROM reviews GROUP BY rating`,
+  ) as [{ rating: number; count: string }[], unknown];
+  const byRating = new Map(rows.map(r => [Number(r.rating), Number(r.count)]));
+  // Always return all 5 stars, even ones with zero reviews, so the chart's x-axis is stable.
+  return [1, 2, 3, 4, 5].map(rating => ({ rating, count: byRating.get(rating) ?? 0 }));
+}
+
+export async function getRatingsByDestination() {
+  const [rows] = await pool.query(`
+    SELECT v.id, v.destination, r.rating, COUNT(*) AS count
+    FROM reviews r
+    JOIN vacations v ON v.id = r.vacationId
+    GROUP BY v.id, r.rating
+    ORDER BY v.id
+  `) as [{ id: number; destination: string; rating: number; count: string }[], unknown];
+
+  const byVacation = new Map<number, { id: number; destination: string; ratings: Record<number, number> }>();
+  for (const r of rows) {
+    if (!byVacation.has(r.id)) {
+      byVacation.set(r.id, { id: r.id, destination: r.destination, ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } });
+    }
+    byVacation.get(r.id)!.ratings[Number(r.rating)] = Number(r.count);
+  }
+
+  return Array.from(byVacation.values()).map(v => ({
+    id: v.id,
+    destination: v.destination,
+    rating1: v.ratings[1],
+    rating2: v.ratings[2],
+    rating3: v.ratings[3],
+    rating4: v.ratings[4],
+    rating5: v.ratings[5],
+    totalReviews: Object.values(v.ratings).reduce((sum, c) => sum + c, 0),
+  }));
 }
 
 export async function getRevenueByMonth() {
@@ -36,6 +83,8 @@ export async function getPopularVacations() {
     SELECT
       v.id, v.destination, v.startDate, v.endDate, v.price, v.imageFileName,
       COUNT(DISTINCT b.id)       AS bookingsCount,
+      (SELECT COALESCE(SUM(b2.numTravelers), 0) FROM bookings b2
+         WHERE b2.vacationId = v.id AND b2.status = 'confirmed')  AS travelersCount,
       COUNT(DISTINCT l.userId)   AS likesCount,
       COALESCE(AVG(r.rating), 0) AS averageRating,
       COUNT(DISTINCT r.id)       AS reviewsCount
@@ -56,6 +105,7 @@ export async function getPopularVacations() {
     price:         Number(r.price),
     imageFileName: String(r.imageFileName),
     bookingsCount: Number(r.bookingsCount),
+    travelersCount: Number(r.travelersCount),
     likesCount:    Number(r.likesCount),
     averageRating: Number(Number(r.averageRating).toFixed(2)),
     reviewsCount:  Number(r.reviewsCount),

@@ -110,6 +110,7 @@ export interface TripPlan {
 export interface AnalyticsOverview {
   totalUsers: number;
   totalBookings: number;
+  totalTravelers: number;
   totalRevenue: number;
   averageRating: number;
   totalLikes: number;
@@ -120,6 +121,27 @@ export interface RevenueByMonth {
   revenue: number;
 }
 
+export interface BookingStatusBreakdown {
+  status: 'confirmed' | 'cancelled';
+  count: number;
+}
+
+export interface RatingDistributionRow {
+  rating: number;
+  count: number;
+}
+
+export interface RatingsByDestinationRow {
+  id: number;
+  destination: string;
+  rating1: number;
+  rating2: number;
+  rating3: number;
+  rating4: number;
+  rating5: number;
+  totalReviews: number;
+}
+
 export interface PopularVacation {
   id: number;
   destination: string;
@@ -128,6 +150,7 @@ export interface PopularVacation {
   price: number;
   imageFileName: string;
   bookingsCount: number;
+  travelersCount: number;
   likesCount: number;
   averageRating: number;
   reviewsCount: number;
