@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc -w",
-    "dev": "nodemon --watch dist --exec node dist/index.js"
+    "dev": "nodemon --watch dist --exec \"node --max-http-header-size=65536 dist/index.js\""
   },
   "dependencies": {
     "@types/pdfkit": "^0.17.6",
