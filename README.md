@@ -14,7 +14,7 @@ A production-quality vacation booking platform with AI trip planning, community 
 | State | Redux Toolkit |
 | AI | NVIDIA NIM (OpenAI-compatible, `meta/llama-3.1-70b-instruct`) |
 | Animation | Framer Motion |
-| i18n | react-i18next (English + Hebrew / RTL) |
+| i18n | react-i18next (English) |
 | Charts | Recharts |
 | Containerisation | Docker + docker-compose |
 
@@ -133,7 +133,6 @@ The mock payment flow is clearly commented in `backend/src/controllers/bookings.
 | Feature | How to find it |
 |---|---|
 | Light / Dark mode toggle | Sun/moon icon in navbar |
-| Hebrew / English toggle (RTL) | EN / עב button in navbar |
 | Page transition animations | Navigate between any pages |
 | 3D tilt + heart-burst on cards | Hover vacation cards / click heart |
 | Staggered grid entrance | Load or filter vacations page |
@@ -239,13 +238,3 @@ romAltarazProject-travel/
 - Visible focus rings (not stripped)
 - Minimum 44×44 px touch targets on all interactive elements
 - Color contrast meets WCAG AA in both light and dark themes
-
-## RTL / Hebrew
-
-Toggle with the **EN / עב** button in the navbar. Hebrew activates `dir="rtl"` on `<html>`, reverses flex/grid ordering using Tailwind logical properties (`ms-`, `me-`, `start-`, `end-`), and mirrors chat bubbles, card badges, and navigation correctly. Language preference is persisted in `localStorage`.
-
----
-
-## GitHub
-
-[GitHub Repository](https://github.com/your-username/romAltarazProject-travel) ← replace with your URL
