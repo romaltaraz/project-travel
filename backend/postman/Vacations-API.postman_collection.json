@@ -11,7 +11,8 @@
     { "key": "adminToken", "value": "", "type": "string" },
     { "key": "vacationId", "value": "1", "type": "string" },
     { "key": "reviewId", "value": "1", "type": "string" },
-    { "key": "bookingId", "value": "1", "type": "string" }
+    { "key": "bookingId", "value": "1", "type": "string" },
+    { "key": "hotelId", "value": "1", "type": "string" }
   ],
   "item": [
     {
@@ -303,6 +304,19 @@
             "url": { "raw": "{{baseUrl}}/ai/semantic-search", "host": ["{{baseUrl}}"], "path": ["ai", "semantic-search"] },
             "description": "Claude translates free text into a structured filter object; backend applies it to a normal SQL query and returns matching vacations."
           }
+        },
+        {
+          "name": "Find Vacation Photo (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"destination\": \"Santorini, Greece\",\n  \"page\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/ai/vacation-photo", "host": ["{{baseUrl}}"], "path": ["ai", "vacation-photo"] },
+            "description": "Searches for a real stock photo of the destination (Magnific, falling back to Wikimedia Commons) and saves it under /uploads. `page` (optional, 1-20) cycles through further results via 'Search again'. The returned filename can be passed as `aiImageFileName` on Add/Update Vacation instead of a multipart file upload."
+          }
         }
       ]
     },
@@ -336,16 +350,16 @@
           }
         },
         {
-          "name": "Ask MCP Assistant - Confirm Booking (step 2 — deep-link pattern)",
+          "name": "Ask MCP Assistant - Confirm Booking (step 2)",
           "request": {
             "method": "POST",
             "header": [
               { "key": "Authorization", "value": "Bearer {{token}}" },
               { "key": "Content-Type", "value": "application/json" }
             ],
-            "body": { "mode": "raw", "raw": "{\n  \"question\": \"Yes, book it\",\n  \"history\": [\n    { \"role\": \"user\", \"content\": \"Book Rome for 2 people\" },\n    { \"role\": \"assistant\", \"content\": \"I found Rome, Italy...\" }\n  ]\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"question\": \"Yes, confirm it\",\n  \"confirmBookingId\": \"<context-id-from-previous-response>\"\n}" },
             "url": { "raw": "{{baseUrl}}/mcp/ask", "host": ["{{baseUrl}}"], "path": ["mcp", "ask"] },
-            "description": "IMPLEMENTATION NOTE: This project uses the deep-link confirmation pattern. Step 1 returns requiresConfirmation:true + pendingBooking with a deepLink URL (e.g. /vacations/3?travelers=2). The frontend shows Confirm/Cancel buttons; on Confirm, it navigates to the deepLink where the user completes the real checkout with mock payment. No booking is created without going through the payment form. Pass history[] to maintain conversation context."
+            "description": "Replace confirmBookingId with whatever context/correlation id the previous response returned, per your implementation."
           }
         }
       ]
@@ -399,6 +413,62 @@
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
             "url": { "raw": "{{baseUrl}}/reports/export/pdf", "host": ["{{baseUrl}}"], "path": ["reports", "export", "pdf"] }
+          }
+        },
+        {
+          "name": "Booking Status Breakdown",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/analytics/booking-status", "host": ["{{baseUrl}}"], "path": ["admin", "analytics", "booking-status"] }
+          }
+        },
+        {
+          "name": "Rating Distribution",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/analytics/rating-distribution", "host": ["{{baseUrl}}"], "path": ["admin", "analytics", "rating-distribution"] }
+          }
+        },
+        {
+          "name": "Ratings By Destination",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/analytics/ratings-by-destination", "host": ["{{baseUrl}}"], "path": ["admin", "analytics", "ratings-by-destination"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hotels",
+      "item": [
+        {
+          "name": "Get Hotels (with likes)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/hotels", "host": ["{{baseUrl}}"], "path": ["hotels"] },
+            "description": "Returns all hotels with likesCount and likedByMe computed for the authenticated user."
+          }
+        },
+        {
+          "name": "Like Hotel",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/hotels/{{hotelId}}/like", "host": ["{{baseUrl}}"], "path": ["hotels", "{{hotelId}}", "like"] },
+            "description": "Returns 404 if the hotel doesn't exist, 409 if already liked by this user."
+          }
+        },
+        {
+          "name": "Unlike Hotel",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/hotels/{{hotelId}}/like", "host": ["{{baseUrl}}"], "path": ["hotels", "{{hotelId}}", "like"] },
+            "description": "Returns 404 if the hotel doesn't exist."
           }
         }
       ]
