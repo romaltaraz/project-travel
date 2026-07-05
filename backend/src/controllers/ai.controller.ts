@@ -7,6 +7,7 @@ import { AppError } from '../middleware/errorHandler.js';
 import { askClaude, assertApiKey } from '../services/anthropic.service.js';
 import { searchMagnificPhoto } from '../services/magnific.service.js';
 import { searchWikimediaPhoto } from '../services/wikimedia.service.js';
+import { searchOpenversePhoto } from '../services/openverse.service.js';
 import { tripPlanCache } from '../services/tripPlannerCache.js';
 import { pool } from '../config/db.js';
 
@@ -307,7 +308,8 @@ export async function semanticSearch(req: AuthRequest, res: Response): Promise<v
 // AI Vacation Photo  —  POST /api/ai/vacation-photo
 // Finds a REAL photo of a destination — Magnific's stock-photo search first
 // (picks the most "attractive" relevance-ranked result), falling back to a
-// free Wikimedia Commons search if Magnific is unavailable or has no match.
+// free Wikimedia Commons search, and finally to Openverse, if earlier
+// sources are unavailable or have no match.
 // Saves the chosen photo into /uploads so the admin form can use it exactly
 // like a manual upload. `page` lets the admin cycle through further results
 // via "Search again".
@@ -330,12 +332,18 @@ export async function generateVacationPhoto(req: AuthRequest, res: Response): Pr
   const { destination } = parsed.data;
   const page = parsed.data.page ?? 1;
 
-  const found = (await searchMagnificPhoto(destination, page)) ?? (await searchWikimediaPhoto(destination, page));
+  const found = (await searchMagnificPhoto(destination, page))
+    ?? (await searchWikimediaPhoto(destination, page))
+    ?? (await searchOpenversePhoto(destination, page));
   if (!found) {
     throw new AppError('No photo found for this destination — try different wording or upload one manually', 404);
   }
 
-  const imgRes = await fetch(found.imageUrl);
+  // Wikimedia (and some other hosts) rate-limit/reject downloads that don't send a
+  // descriptive User-Agent — same header already used for the Wikimedia search request.
+  const imgRes = await fetch(found.imageUrl, {
+    headers: { 'User-Agent': 'VacationsApp/1.0 (admin photo search feature)' },
+  });
   if (!imgRes.ok) throw new AppError('Could not download the selected photo', 502);
   const imageBuffer = Buffer.from(await imgRes.arrayBuffer());
 

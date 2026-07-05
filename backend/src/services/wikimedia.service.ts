@@ -9,6 +9,7 @@ export interface FoundPhoto {
 
 interface CommonsImageInfo {
   url: string;
+  thumburl?: string;
   mime: string;
   width: number;
   height: number;
@@ -33,6 +34,9 @@ export async function searchWikimediaPhoto(query: string, page: number): Promise
   url.searchParams.set('gsroffset', String(Math.max(0, (page - 1) * 10)));
   url.searchParams.set('prop', 'imageinfo');
   url.searchParams.set('iiprop', 'url|size|mime');
+  // Request a capped-width thumbnail URL — Wikimedia rate-limits/blocks bulk downloads
+  // of full-resolution originals and recommends thumbnails instead (see their 429 response).
+  url.searchParams.set('iiurlwidth', '1600');
   url.searchParams.set('format', 'json');
 
   let res: Response;
@@ -60,5 +64,5 @@ export async function searchWikimediaPhoto(query: string, page: number): Promise
 
   // Prefer landscape orientation for the vacation card's wide crop
   const best = candidates.sort((a, b) => (b.width / b.height) - (a.width / a.height))[0];
-  return { imageUrl: best.url, source: 'wikimedia' };
+  return { imageUrl: best.thumburl ?? best.url, source: 'wikimedia' };
 }

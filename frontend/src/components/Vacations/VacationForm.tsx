@@ -20,7 +20,7 @@ const VacationForm: React.FC<Props> = ({ initial, onSubmit, loading }) => {
   const [errors,      setErrors]      = useState<Record<string, string>>({});
 
   const [aiImageFileName, setAiImageFileName] = useState<string | null>(null);
-  const [aiSource,        setAiSource]        = useState<'magnific' | 'wikimedia' | null>(null);
+  const [aiSource,        setAiSource]        = useState<'magnific' | 'wikimedia' | 'openverse' | null>(null);
   const [aiPage,          setAiPage]          = useState(1);
   const [aiLoading,       setAiLoading]       = useState(false);
   const [aiError,         setAiError]         = useState<string | null>(null);
@@ -163,7 +163,7 @@ const VacationForm: React.FC<Props> = ({ initial, onSubmit, loading }) => {
             />
             {aiSource && (
               <p className="text-xs text-gray-400 mt-1">
-                Photo via {aiSource === 'magnific' ? 'Magnific' : 'Wikimedia Commons'}
+                Photo via {aiSource === 'magnific' ? 'Magnific' : aiSource === 'wikimedia' ? 'Wikimedia Commons' : 'Openverse'}
               </p>
             )}
             <div className="flex items-center gap-2 mt-2">

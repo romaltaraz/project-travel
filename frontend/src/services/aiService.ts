@@ -12,5 +12,5 @@ export const aiService = {
     api.post('/ai/semantic-search', { query }),
 
   generateVacationPhoto: (destination: string, page = 1) =>
-    api.post<{ imageFileName: string; source: 'magnific' | 'wikimedia' }>('/ai/vacation-photo', { destination, page }),
+    api.post<{ imageFileName: string; source: 'magnific' | 'wikimedia' | 'openverse' }>('/ai/vacation-photo', { destination, page }),
 };
