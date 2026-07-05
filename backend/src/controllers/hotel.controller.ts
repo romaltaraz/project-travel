@@ -11,6 +11,7 @@ export async function getHotels(req: AuthRequest, res: Response): Promise<void> 
 export async function likeHotel(req: AuthRequest, res: Response): Promise<void> {
   const userId = req.user!.id;
   const hotelId = parseInt(req.params.id);
+  if (isNaN(hotelId)) throw new AppError('Invalid hotel id', 400);
 
   const exists = await hotelRepo.findById(hotelId);
   if (!exists) throw new AppError('Hotel not found', 404);
@@ -26,6 +27,11 @@ export async function likeHotel(req: AuthRequest, res: Response): Promise<void> 
 export async function unlikeHotel(req: AuthRequest, res: Response): Promise<void> {
   const userId = req.user!.id;
   const hotelId = parseInt(req.params.id);
+  if (isNaN(hotelId)) throw new AppError('Invalid hotel id', 400);
+
+  const exists = await hotelRepo.findById(hotelId);
+  if (!exists) throw new AppError('Hotel not found', 404);
+
   await hotelRepo.removeLike(userId, hotelId);
   const updated = await hotelRepo.findById(hotelId, userId);
   res.json(updated);

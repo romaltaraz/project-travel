@@ -130,7 +130,7 @@ const cardVariants = {
 const Vacations: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { vacations, page, totalPages, filters, loading, error } = useSelector((s: RootState) => s.vacations);
-  const { hotels } = useSelector((s: RootState) => s.hotels);
+  const { hotels, loading: hotelsLoading, error: hotelsError } = useSelector((s: RootState) => s.hotels);
   const { t } = useTranslation();
   const [vacationType, setVacationType] = useState<'packages' | 'hotels' | 'flights' | 'bundle'>('packages');
   const [hotelSearch, setHotelSearch] = useState('');
@@ -280,19 +280,28 @@ const Vacations: React.FC = () => {
                 </div>
               </div>
 
-              {filteredHotels.length === 0 ? (
-                <p className="text-center text-gray-400 py-16">No hotels found for “{hotelSearch}”.</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {filteredHotels.map(h => (
-                    <HotelCard
-                      key={h.id}
-                      {...h}
-                      liked={h.likedByMe}
-                      onToggleLike={() => toggleHotelLike(h)}
-                    />
-                  ))}
-                </div>
+              {hotelsLoading && <div className="py-16"><LoadingSpinner size="lg" /></div>}
+              {hotelsError   && <p className="text-center text-red-500 py-10">{hotelsError}</p>}
+
+              {!hotelsLoading && !hotelsError && (
+                filteredHotels.length === 0 ? (
+                  <p className="text-center text-gray-400 py-16">
+                    {hotelSearch.trim()
+                      ? `No hotels found for “${hotelSearch}”.`
+                      : 'No hotels match the selected filters.'}
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {filteredHotels.map(h => (
+                      <HotelCard
+                        key={h.id}
+                        {...h}
+                        liked={h.likedByMe}
+                        onToggleLike={() => toggleHotelLike(h)}
+                      />
+                    ))}
+                  </div>
+                )
               )}
             </div>
           )}

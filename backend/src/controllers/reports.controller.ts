@@ -19,7 +19,7 @@ export async function likesReportCsv(_req: Request, res: Response): Promise<void
   const lines = [header, ...popular.map(v => {
     const r = ratingsById.get(v.id);
     return [
-      `"${v.destination}"`,
+      `"${v.destination.replace(/"/g, '""')}"`,
       v.bookingsCount,
       v.travelersCount,
       v.likesCount,
