@@ -112,7 +112,7 @@ const VacationDetail: React.FC = () => {
           {!isAdmin && (
             <div className="flex gap-2">
               <button onClick={handleLike}
-                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-sm font-semibold transition-colors cursor-pointer ${vacation.likedByMe ? 'bg-rose-50 border-rose-300 text-rose-600 dark:bg-rose-900/20 dark:border-rose-700 dark:text-rose-400' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-rose-300 hover:text-rose-500'}`}>
+                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-sm font-semibold transition-colors cursor-pointer ${vacation.likedByMe ? 'bg-red-50 border-red-300 text-red-600 dark:bg-red-900/20 dark:border-red-700 dark:text-red-400' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-red-300 hover:text-red-500'}`}>
                 <Heart className="w-4 h-4" fill={vacation.likedByMe ? 'currentColor' : 'none'} /> {vacation.likedByMe ? 'Liked' : 'Like'}
               </button>
               <button onClick={() => setShowBooking(true)}

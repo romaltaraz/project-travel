@@ -51,7 +51,7 @@ const SearchIcon = () => (
 const features = [
   { icon: <MapIcon />, key: 'browse',    color: 'bg-primary-500',  glow: 'shadow-[0_0_28px_rgba(16,185,129,.45)]'  },
   { icon: <SparkleIcon />, key: 'ai',    color: 'bg-violet-500',   glow: 'shadow-[0_0_28px_rgba(139,92,246,.45)]'  },
-  { icon: <CreditCardIcon />, key: 'book', color: 'bg-accent-500', glow: 'shadow-[0_0_28px_rgba(245,158,11,.45)]'  },
+  { icon: <CreditCardIcon />, key: 'book', color: 'bg-accent-500',  glow: 'shadow-[0_0_28px_rgba(245,158,11,.45)]'  },
   { icon: <StarIcon />, key: 'community', color: 'bg-[#f43f5e]',    glow: 'shadow-[0_0_28px_rgba(244,63,94,.45)]'   },
 ];
 
@@ -72,7 +72,7 @@ const DESTINATION_CARDS = [
 
 const stats = [
   { icon: <GlobeIcon />,   num: '22+',   label: 'Destinations',      color: 'text-primary-300'  },
-  { icon: <StarIcon />,    num: '4.8',   label: 'Average Rating',    color: 'text-amber-300'    },
+  { icon: <StarIcon />,    num: '4.8',   label: 'Average Rating',    color: 'text-amber-400'    },
   { icon: <UsersIcon />,   num: '10k+',  label: 'Happy Travelers',   color: 'text-emerald-300'  },
   { icon: <SparkleIcon />, num: 'AI',    label: 'Powered Planning',  color: 'text-violet-300'   },
 ];
@@ -107,13 +107,13 @@ const About: React.FC = () => {
             className="w-full h-full object-cover object-center"
           />
           {/* Dark overlay for text legibility */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/65" />
-          {/* Emerald + aurora colour tint on top of photo */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/45 to-black/75" />
+          {/* Green aurora colour tint on top of photo */}
           <div className="absolute inset-0" style={{
             backgroundImage: [
               'radial-gradient(ellipse 70% 50% at 15% 45%, rgba(5,150,105,.45) 0%, transparent 60%)',
-              'radial-gradient(ellipse 60% 40% at 85% 20%, rgba(217,119,6,.30) 0%, transparent 55%)',
-              'radial-gradient(ellipse 50% 60% at 60% 90%, rgba(245,158,11,.20) 0%, transparent 55%)',
+              'radial-gradient(ellipse 60% 40% at 85% 20%, rgba(47,127,51,.30) 0%, transparent 55%)',
+              'radial-gradient(ellipse 50% 60% at 60% 90%, rgba(74,222,106,.20) 0%, transparent 55%)',
             ].join(', ')
           }} />
         </div>
@@ -127,7 +127,7 @@ const About: React.FC = () => {
         <motion.div
           animate={{ y: [0, 22, 0], x: [0, -10, 0] }}
           transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-          className="absolute bottom-[5%] right-[3%] w-[420px] h-[420px] rounded-full bg-amber-400/18 blur-[70px] pointer-events-none"
+          className="absolute bottom-[5%] right-[3%] w-[420px] h-[420px] rounded-full bg-emerald-400/18 blur-[70px] pointer-events-none"
         />
         <motion.div
           animate={{ y: [0, -16, 0] }}
@@ -172,7 +172,7 @@ const About: React.FC = () => {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -40, opacity: 0 }}
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="block font-display text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-accent-300 to-accent-500 bg-clip-text text-transparent whitespace-nowrap"
+                  className="block font-display text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-emerald-300 to-primary-400 bg-clip-text text-transparent whitespace-nowrap"
                 >
                   {CYCLING_WORDS[wordIdx]}
                 </motion.span>
@@ -196,7 +196,7 @@ const About: React.FC = () => {
             />
             <Link
               to={searchQuery ? `/vacations?search=${encodeURIComponent(searchQuery)}` : '/vacations'}
-              className="flex items-center gap-1.5 px-4 py-2 bg-accent-500 hover:bg-accent-400 text-white text-sm font-bold rounded-xl transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white text-sm font-bold rounded-xl transition-colors"
             >
               Search <ArrowRightIcon />
             </Link>
@@ -206,14 +206,14 @@ const About: React.FC = () => {
           <div className="flex gap-4 flex-wrap justify-center">
             {user ? (
               <Link to="/vacations"
-                className="group flex items-center gap-2 px-8 py-4 bg-accent-500 hover:bg-accent-400 text-white font-bold rounded-2xl text-base shadow-xl shadow-amber-900/30 hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200"
+                className="group flex items-center gap-2 px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl text-base shadow-xl shadow-primary-900/30 hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200"
               >
                 {t('hero.browseVacations')} <ArrowRightIcon />
               </Link>
             ) : (
               <>
                 <Link to="/register"
-                  className="group flex items-center gap-2 px-8 py-4 bg-accent-500 hover:bg-accent-400 text-white font-bold rounded-2xl text-base shadow-xl shadow-amber-900/30 hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200"
+                  className="group flex items-center gap-2 px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl text-base shadow-xl shadow-primary-900/30 hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200"
                 >
                   {t('hero.getStarted')} <ArrowRightIcon />
                 </Link>
@@ -245,22 +245,9 @@ const About: React.FC = () => {
           ))}
         </motion.div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4, duration: 0.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5"
-        >
-          <span className="text-[10px] text-white/40 font-semibold tracking-[0.2em] uppercase">Scroll</span>
-          <motion.div
-            animate={{ y: [0, 7, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-5 h-8 border-2 border-white/25 rounded-full flex items-start justify-center pt-1.5"
-          >
-            <div className="w-1 h-1.5 bg-white/60 rounded-full" />
-          </motion.div>
-        </motion.div>
 
-        {/* Wave divider */}
-        <div className="absolute bottom-0 inset-x-0 pointer-events-none">
+        {/* Wave divider — overlaps the section boundary by 2px so no hairline gap shows through */}
+        <div className="absolute -bottom-0.5 inset-x-0 pointer-events-none">
           <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full block">
             <path d="M0 80L1440 80L1440 40C1100 75 840 15 720 40C600 65 300 12 0 40L0 80Z" className="fill-emerald-50 dark:fill-gray-950"/>
           </svg>
@@ -270,11 +257,11 @@ const About: React.FC = () => {
       {/* ════════════════════════════════════════
           DESTINATIONS FAN CAROUSEL
           ════════════════════════════════════════ */}
-      <section className="py-8 md:py-12 bg-emerald-50 dark:bg-gray-950 overflow-x-clip w-full">
+      <section className="pt-4 md:pt-6 pb-[calc(1rem+75.6px)] md:pb-[calc(1.5rem+75.6px)] bg-emerald-50 dark:bg-gray-950 overflow-x-clip w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.5 }}
-          className="text-center mb-4 px-4"
+          className="text-center mb-0 px-4"
         >
           <span className="inline-block px-4 py-1.5 text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-700/50 rounded-full mb-4">
             Popular Destinations
@@ -364,7 +351,7 @@ const About: React.FC = () => {
             viewport={{ once: true }}
             className="relative z-10"
           >
-            <span className="inline-block px-4 py-1.5 text-xs font-bold text-amber-100 bg-white/15 border border-white/20 rounded-full mb-5">
+            <span className="inline-block px-4 py-1.5 text-xs font-bold text-primary-100 bg-white/15 border border-white/20 rounded-full mb-5">
               Join Thousands of Travelers
             </span>
             <h2 className="text-3xl md:text-5xl font-display font-extrabold text-white mb-4 leading-tight">

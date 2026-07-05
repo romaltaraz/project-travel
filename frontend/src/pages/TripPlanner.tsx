@@ -72,7 +72,7 @@ const DayCard: React.FC<{ day: TripPlanDay; index: number }> = ({ day, index }) 
     {/* Timeline line */}
     <div className="absolute left-4 top-6 bottom-0 w-0.5 bg-primary-100 dark:bg-primary-900/50 last:hidden" />
     {/* Day number bubble */}
-    <div className="absolute left-0 top-1 w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center text-white text-xs font-bold ring-4 ring-sky-50 dark:ring-gray-950 shadow-sm" style={{ animationDelay: `${index * 80}ms` }}>
+    <div className="absolute left-0 top-1 w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center text-white text-xs font-bold ring-4 ring-primary-50 dark:ring-gray-950 shadow-sm" style={{ animationDelay: `${index * 80}ms` }}>
       {day.day}
     </div>
 
