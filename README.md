@@ -20,28 +20,37 @@ A production-quality vacation booking platform with AI trip planning, community 
 
 ---
 
-## Quick Start — Docker (recommended)
+## Quick Start
+
+### 1. Database (Docker)
 
 ```bash
-# 1. Clone & enter the project
-git clone <repo-url>
-cd romAltarazProject-travel
-
-# 2. Copy and fill in secrets
-cp backend/.env.example backend/.env
-cp .env.example .env          # root .env — read by docker-compose
-# → set NVIDIA_API_KEY in root .env (AI features)
-
-# 3. Build and run
-docker compose up -d --build
-
-# 4. Open
-# App:         http://localhost
-# API:         http://localhost:3000/api
+docker compose up -d
+# DB:          localhost:3306
 # phpMyAdmin:  http://localhost:8080
 ```
 
 The database is seeded automatically on first run (users, 14 vacations, likes, reviews, bookings).
+
+### 2. Backend
+
+```bash
+cd backend
+npm install
+cp .env.example .env    # fill in DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, JWT_SECRET, NVIDIA_API_KEY, MAGNIFIC_API_KEY
+npm run tsc              # terminal A — tsc -w, compiles src/ → dist/
+npm run dev               # terminal B — nodemon, runs dist/index.js
+```
+
+### 3. Frontend
+
+```bash
+cd frontend
+npm install --legacy-peer-deps
+npm run dev                # CRA dev server on :3001
+```
+
+App: http://localhost:3001 · API: http://localhost:3000/api
 
 **Seed credentials**
 
@@ -53,39 +62,16 @@ The database is seeded automatically on first run (users, 14 vacations, likes, r
 
 ---
 
-## Manual Setup (without Docker)
-
-### Backend
-
-```bash
-cd backend
-npm install
-cp .env.example .env    # fill in DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, JWT_SECRET, NVIDIA_API_KEY
-npm run dev             # ts-node-dev hot reload
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install --legacy-peer-deps
-npm start               # CRA dev server on :3001
-```
-
----
-
 ## Environment Variables
 
-### Root `.env` (read by docker-compose)
+### Root `.env` (read by `docker-compose.yml`, for the `db` container)
 
-| Variable | Default | Required |
-|---|---|---|
-| `NVIDIA_API_KEY` | — | Yes (AI features) |
-| `DB_ROOT_PASSWORD` | rootpassword | No |
-| `DB_NAME` | vacations_db | No |
-| `DB_USER` | vacations_user | No |
-| `DB_PASSWORD` | vacations_pass | No |
-| `JWT_SECRET` | (dev default) | **Change in production** |
+| Variable | Default |
+|---|---|
+| `DB_ROOT_PASSWORD` | rootpassword |
+| `DB_NAME` | vacations_db |
+| `DB_USER` | vacations_user |
+| `DB_PASSWORD` | vacations_pass |
 
 ### `backend/.env`
 
@@ -99,6 +85,7 @@ npm start               # CRA dev server on :3001
 | `JWT_SECRET` | Secret for signing JWT tokens |
 | `PORT` | Backend port (default 3000) |
 | `NVIDIA_API_KEY` | Get yours free at https://build.nvidia.com |
+| `MAGNIFIC_API_KEY` | Text-to-image generation for the admin "ask AI for a photo" feature — get yours at https://www.magnific.com/app. Falls back to a keyless Wikimedia Commons photo search if unset or the request fails. |
 
 ---
 
@@ -125,6 +112,8 @@ The mock payment flow is clearly commented in `backend/src/controllers/bookings.
 | Star ratings + community reviews | Vacation detail page |
 | Booking with simulated checkout | "Book now" on any vacation |
 | My Bookings + cancel | My Bookings page |
+| Browse hotels worldwide + filters (liked / free cancellation / breakfast) | Vacations → "Hotels" tab |
+| Like / Unlike hotels | Heart icon on any hotel card |
 | Admin vacation CRUD | Admin → Vacations |
 | Admin booking management | Admin → Bookings |
 | JWT auth (register / login / logout) | Navbar |
@@ -136,7 +125,8 @@ The mock payment flow is clearly commented in `backend/src/controllers/bookings.
 | AI Trip Planner | AI Planner in nav — type any destination |
 | Semantic Smart Search | Smart Search in nav — plain-language queries |
 | MCP Chat Assistant | Floating chat button (bottom-right) |
-| Analytics dashboard | Admin → Analytics |
+| Admin "generate photo with AI" (Magnific, Wikimedia fallback) | Admin → Vacations → Add/Edit |
+| Analytics dashboard (overview, revenue, popular vacations, booking status, rating distribution/by destination) | Admin → Analytics |
 | CSV + PDF export | Analytics dashboard |
 
 ### Stage 3 — Visual Polish & i18n
@@ -160,36 +150,48 @@ The mock payment flow is clearly commented in `backend/src/controllers/bookings.
 POST   /api/auth/register
 POST   /api/auth/login
 
-GET    /api/vacations          ?page=1&status=future
-POST   /api/vacations          (admin)
-PUT    /api/vacations/:id      (admin)
-DELETE /api/vacations/:id      (admin)
+GET    /api/vacations           ?page=1&status=future
+POST   /api/vacations           (admin)
+PUT    /api/vacations/:id       (admin)
+DELETE /api/vacations/:id       (admin)
+POST   /api/vacations/:id/like
+DELETE /api/vacations/:id/like
 
-POST   /api/likes/:vacationId
-DELETE /api/likes/:vacationId
+GET    /api/hotels
+POST   /api/hotels/:id/like
+DELETE /api/hotels/:id/like
 
-POST   /api/reviews/:vacationId
+GET    /api/vacations/:id/reviews
+POST   /api/vacations/:id/reviews
 PUT    /api/reviews/:id
 DELETE /api/reviews/:id
 
-POST   /api/bookings
-GET    /api/bookings/my
-PATCH  /api/bookings/:id/cancel
+POST   /api/vacations/:id/book
+GET    /api/bookings/me
+DELETE /api/bookings/:id
 
-POST   /api/ai/recommend       { destination }
-POST   /api/ai/trip-plan       { destination, days }  OR  { vacationId }
-POST   /api/ai/semantic-search { query }
+POST   /api/ai/recommend        { destination }
+POST   /api/ai/trip-plan        { destination, days }  OR  { vacationId }
+POST   /api/ai/semantic-search  { query }
+POST   /api/ai/vacation-photo   { destination }  (admin — Magnific, falls back to Wikimedia)
 
-POST   /api/mcp/ask            { question, history[] }
+POST   /api/mcp/ask             { question, history[] }
 
+GET    /api/admin/bookings      ?status=&dateFrom=&dateTo=
+PUT    /api/admin/bookings/:id
 GET    /api/admin/analytics/overview
 GET    /api/admin/analytics/revenue-by-month
 GET    /api/admin/analytics/popular-vacations
-GET    /api/reports/export/csv
+GET    /api/admin/analytics/booking-status
+GET    /api/admin/analytics/rating-distribution
+GET    /api/admin/analytics/ratings-by-destination
+
+GET    /api/reports/likes
+GET    /api/reports/likes/csv
 GET    /api/reports/export/pdf
 ```
 
-Full Postman collection: `backend/postman/Vacations.postman_collection.json`
+Full Postman collection: `backend/postman/Vacations-API.postman_collection.json`
 
 ---
 
@@ -199,9 +201,9 @@ Full Postman collection: `backend/postman/Vacations.postman_collection.json`
 romAltarazProject-travel/
 ├── backend/
 │   ├── src/
-│   │   ├── controllers/    auth · vacations · likes · reviews · bookings · ai · mcp · admin · reports
-│   │   ├── repositories/   analytics
-│   │   ├── services/       anthropic (NVIDIA NIM) · tripPlannerCache
+│   │   ├── controllers/    auth · vacations · hotel · likes · reviews · bookings · ai · mcp · admin · reports
+│   │   ├── repositories/   hotel · analytics
+│   │   ├── services/       anthropic (NVIDIA NIM) · magnific · wikimedia · tripPlannerCache
 │   │   ├── middleware/     auth · errorHandler · upload
 │   │   ├── routes/
 │   │   ├── config/         db
@@ -213,17 +215,17 @@ romAltarazProject-travel/
 │   └── package.json
 ├── frontend/
 │   ├── src/
-│   │   ├── components/     Layout · Vacations · Reviews · Booking · Chat · Common
+│   │   ├── components/     Layout · Vacations · Reviews · Booking · Chat · Common · ui (hotel-card-1)
 │   │   ├── pages/          user pages · admin pages
-│   │   ├── store/          Redux slices (auth · vacations · bookings · reviews · aiChat · ui)
-│   │   ├── services/       api · aiService · analyticsService
+│   │   ├── store/          Redux slices (auth · vacations · hotels · bookings · reviews · aiChat · ui)
+│   │   ├── services/       api · aiService · analyticsService · hotelService
 │   │   ├── i18n/           locales/en.json · locales/he.json
 │   │   └── types/
 │   └── Dockerfile
 ├── dataBase/
 │   └── schema.sql
 ├── docker-compose.yml
-├── .env                    (gitignored — copy from .env.example)
+├── .env                    (gitignored — optional DB override values for docker-compose)
 └── README.md
 ```
 
