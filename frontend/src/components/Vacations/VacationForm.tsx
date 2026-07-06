@@ -158,7 +158,7 @@ const VacationForm: React.FC<Props> = ({ initial, onSubmit, loading }) => {
           <div className="mt-3 relative inline-block">
             <img
               src={getImageUrl(aiImageFileName)}
-              alt="Found photo preview"
+              alt="Preview of the destination"
               className="w-full max-w-xs rounded-lg border border-gray-200 dark:border-gray-700"
             />
             {aiSource && (
